@@ -27,7 +27,7 @@
 | WEB 서버 | Nginx 1.24 |
 | WAS | Apache Tomcat 10 (2대) |
 | 언어/프레임워크 | Java 17, Spring Boot 3.x |
-| APM | Scouter |
+| APM | Scouter (Jennifer 오픈소스 대안) |
 | 대시보드 | Grafana + Prometheus |
 | SSO | Keycloak (OIDC) |
 | 인증서 | OpenSSL (자체 CA) |
@@ -101,8 +101,24 @@ docker-compose ps
 ./scripts/backup.sh
 ```
 
+## APM: Scouter vs Jennifer
+
+본 프로젝트에서는 APM으로 **Scouter**를 사용한다. Jennifer는 상용(유료) 제품이므로 사이드 프로젝트에서 사용할 수 없어, 같은 계열의 오픈소스인 Scouter로 대체하였다.
+
+| 항목 | Jennifer (상용) | Scouter (본 프로젝트) |
+|------|-----------------|----------------------|
+| 라이선스 | 상용 (유료) | 오픈소스 (무료) |
+| 개발 배경 | 제니퍼소프트 | 제니퍼소프트 출신 개발자 (LG CNS) |
+| 핵심 기능 | TPS, 응답시간, JVM 모니터링 | 동일 |
+| Agent 방식 | Java Agent (javaagent) | 동일 |
+| 실시간 대시보드 | O | O |
+| 힙 덤프/쓰레드 분석 | O | O |
+
+Scouter는 Jennifer와 동일한 Java Agent 기반 APM으로, TPS/응답시간/JVM 힙/GC 모니터링 등 핵심 기능이 같다. 채용공고의 "Jennifer 기반 시스템 기술지원" 역량을 이 프로젝트 경험으로 어필할 수 있다.
+
 ## 문서
 
 - [개발계획서](개발계획서.md) - 상세 개발 계획 및 일정
 - [아키텍처 문서](docs/architecture.md) - 시스템 구성도 및 네트워크 구조
 - [트러블슈팅](docs/troubleshooting.md) - 장애 시나리오별 대응 내역
+- [테스트 보고서](docs/test-report.md) - 전체 26개 항목 테스트 결과
