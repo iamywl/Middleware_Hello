@@ -1,0 +1,208 @@
+services:
+  # ──────────────────────────────────────
+  # MySQL Database
+  # ──────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: mw-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: middleware_db
+      MYSQL_USER: app_user
+      MYSQL_PASSWORD: app_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - mw-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ──────────────────────────────────────
+  # WAS - Tomcat #1 (+ Scouter Agent)
+  # ──────────────────────────────────────
+  tomcat1:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: mw-tomcat1
+    environment:
+      JAVA_OPTS: >-
+        -Xms256m -Xmx512m
+        -DjvmRoute=tomcat1
+        -Dserver.port=8080
+        -javaagent:/opt/scouter/agent.java/scouter.agent.jar
+        -Dscouter.config=/opt/scouter-conf/agent.conf
+        -Dobj_name=tomcat1
+    volumes:
+      - ./configs/tomcat/tomcat1/server.xml:/usr/local/tomcat/conf/server.xml:ro
+      - ./configs/scouter/agent.conf:/opt/scouter-conf/agent.conf:ro
+      - tomcat1_logs:/usr/local/tomcat/logs
+    networks:
+      - mw-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # ──────────────────────────────────────
+  # WAS - Tomcat #2 (+ Scouter Agent)
+  # ──────────────────────────────────────
+  tomcat2:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: mw-tomcat2
+    environment:
+      JAVA_OPTS: >-
+        -Xms256m -Xmx512m
+        -DjvmRoute=tomcat2
+        -Dserver.port=8080
+        -javaagent:/opt/scouter/agent.java/scouter.agent.jar
+        -Dscouter.config=/opt/scouter-conf/agent.conf
+        -Dobj_name=tomcat2
+    volumes:
+      - ./configs/tomcat/tomcat2/server.xml:/usr/local/tomcat/conf/server.xml:ro
+      - ./configs/scouter/agent.conf:/opt/scouter-conf/agent.conf:ro
+      - tomcat2_logs:/usr/local/tomcat/logs
+    networks:
+      - mw-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # ──────────────────────────────────────
+  # WEB - Nginx (리버스 프록시 + 로드밸런싱)
+  # ──────────────────────────────────────
+  nginx:
+    image: nginx:1.24
+    container_name: mw-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./configs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./configs/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./configs/nginx/ssl:/etc/nginx/ssl:ro
+      - nginx_logs:/var/log/nginx
+    networks:
+      - mw-network
+    depends_on:
+      - tomcat1
+      - tomcat2
+
+  # ──────────────────────────────────────
+  # SSO - Keycloak
+  # ──────────────────────────────────────
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    container_name: mw-keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    command:
+      - start-dev
+      - --import-realm
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./configs/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
+      - keycloak_data:/opt/keycloak/data
+    networks:
+      - mw-network
+
+  # ──────────────────────────────────────
+  # APM - Scouter Server
+  # ──────────────────────────────────────
+  scouter-server:
+    build:
+      context: ./configs/scouter
+      dockerfile: Dockerfile
+    container_name: mw-scouter
+    ports:
+      - "6100:6100"
+      - "6180:6180"
+    volumes:
+      - scouter_data:/opt/scouter/server/database
+    networks:
+      - mw-network
+
+  # ──────────────────────────────────────
+  # Monitoring - Prometheus
+  # ──────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: mw-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./configs/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=15d"
+    networks:
+      - mw-network
+
+  # ──────────────────────────────────────
+  # Monitoring - Node Exporter (서버 리소스)
+  # ──────────────────────────────────────
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: mw-node-exporter
+    ports:
+      - "9100:9100"
+    networks:
+      - mw-network
+
+  # ──────────────────────────────────────
+  # Monitoring - Nginx Exporter
+  # ──────────────────────────────────────
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    container_name: mw-nginx-exporter
+    ports:
+      - "9113:9113"
+    command:
+      - "--nginx.scrape-uri=http://nginx:80/stub_status"
+    networks:
+      - mw-network
+    depends_on:
+      - nginx
+
+  # ──────────────────────────────────────
+  # Monitoring - Grafana 대시보드
+  # ──────────────────────────────────────
+  grafana:
+    image: grafana/grafana:latest
+    container_name: mw-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - ./configs/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./configs/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    networks:
+      - mw-network
+    depends_on:
+      - prometheus
+
+networks:
+  mw-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  tomcat1_logs:
+  tomcat2_logs:
+  nginx_logs:
+  scouter_data:
+  prometheus_data:
+  grafana_data:
+  keycloak_data:

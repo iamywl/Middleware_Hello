@@ -1,0 +1,35 @@
+# SSL 개인키 (절대 커밋 금지)
+configs/nginx/ssl/ca.key
+configs/nginx/ssl/server.key
+configs/nginx/ssl/server.csr
+configs/nginx/ssl/ca.srl
+
+# 인증서는 포함 (포트폴리오 시연용 자체 CA)
+# configs/nginx/ssl/ca.crt
+# configs/nginx/ssl/server.crt
+# configs/nginx/ssl/server-chain.crt
+
+# 로그/백업
+logs/
+backups/
+
+# Docker 볼륨 데이터
+*.data
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Java build
+app/target/
+*.class
+*.jar
+!configs/scouter/*.jar
+
+# 원본 기획서 (선택)
+# *.docx
