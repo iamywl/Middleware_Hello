@@ -170,6 +170,7 @@ middle_ware/
 
 ## 문서
 
+- **[사용자 가이드](docs/user-guide.md) - 처음부터 따라하는 전체 서비스 확인 가이드**
 - [개발계획서](개발계획서.md) - 상세 개발 계획 및 일정
 - [아키텍처 문서](docs/architecture.md) - 시스템 구성도 및 네트워크 구조
 - [트러블슈팅](docs/troubleshooting.md) - 장애 시나리오별 대응 내역
