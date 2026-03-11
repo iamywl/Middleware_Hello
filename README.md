@@ -1,6 +1,18 @@
 # Linux 기반 WEB/WAS 미들웨어 환경 구축 및 APM 모니터링 시스템
 
-미들웨어(M/W) 기술엔지니어 직무 대비 실습 프로젝트
+> 미들웨어(M/W) 기술엔지니어 직무 대비 실습 프로젝트
+>
+> `docker-compose up -d` 한 줄로 **WEB/WAS 이중화 + APM 모니터링 + SSO 인증 + SSL 보안** 전체 인프라를 구동할 수 있습니다.
+
+---
+
+## 프로젝트 소개
+
+실제 기업 운영 환경과 동일한 **WEB/WAS 미들웨어 아키텍처**를 Docker 기반으로 구축한 프로젝트입니다.
+
+클라이언트 요청이 **Nginx(WEB)** → **Tomcat(WAS) 이중화** → **MySQL(DB)** 로 흐르는 3-Tier 구조를 구현하고, **Scouter APM**으로 WAS 성능을 실시간 모니터링하며, **Keycloak**으로 SSO 인증, **자체 CA 인증서**로 HTTPS 보안 통신까지 적용한 풀스택 미들웨어 환경입니다.
+
+---
 
 ## 시스템 아키텍처
 
@@ -11,7 +23,7 @@
 [Nginx - 리버스 프록시 + 로드밸런싱]
        / \
       v   v
-[Tomcat #1]  [Tomcat #2]  ← WAS 이중화
+[Tomcat #1]  [Tomcat #2]  ← WAS 이중화 (Round Robin)
       \   /
        v v
 [MySQL DB] + [Scouter APM Server] + [Keycloak SSO]
@@ -19,91 +31,128 @@
         [Grafana + Prometheus 대시보드]
 ```
 
-## 기술 스택
+---
 
-| 분류 | 기술/도구 |
-|------|-----------|
-| OS | Ubuntu 22.04 LTS |
-| WEB 서버 | Nginx 1.24 |
-| WAS | Apache Tomcat 10 (2대) |
-| 언어/프레임워크 | Java 17, Spring Boot 3.x |
-| APM | Scouter (Jennifer 오픈소스 대안) |
-| 대시보드 | Grafana + Prometheus |
-| SSO | Keycloak (OIDC) |
-| 인증서 | OpenSSL (자체 CA) |
-| 가상화 | Docker Compose |
-| DB | MySQL 8.x |
+## 사용 오픈소스 기술 스택
+
+### WEB / WAS / DB
+
+| 기술 | 역할 | 설명 |
+|:----:|------|------|
+| <img src="https://raw.githubusercontent.com/nginx/nginx/master/docs/nginx.png" alt="Nginx" width="40"> <br> **Nginx 1.24** | **리버스 프록시 + 로드밸런서** | 클라이언트의 HTTPS 요청을 받아 SSL 종료(Termination) 처리 후, 백엔드 Tomcat 2대에 **Round Robin** 방식으로 트래픽을 분산합니다. `/stub_status` 엔드포인트로 활성 연결 수, 요청 처리량 등의 메트릭을 Prometheus에 노출합니다. |
+| <img src="https://img.shields.io/badge/Apache%20Tomcat-F8DC75?style=flat&logo=apachetomcat&logoColor=black" alt="Tomcat"> <br> **Apache Tomcat 10** | **WAS (2대 이중화)** | Spring Boot 애플리케이션을 구동하는 서블릿 컨테이너입니다. 2대를 이중화하여 한 대가 장애 시에도 서비스가 중단되지 않는 **고가용성(HA)** 환경을 구현합니다. 각 인스턴스에 Scouter Java Agent를 부착하여 TPS, 응답시간, JVM 힙 메모리를 실시간 수집합니다. |
+| <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=mysql&logoColor=white" alt="MySQL"> <br> **MySQL 8.0** | **관계형 데이터베이스** | 애플리케이션 데이터를 저장하는 RDBMS입니다. Docker Volume으로 데이터 영속성을 보장하며, Health Check를 통해 DB가 준비된 후에만 WAS가 기동되도록 의존성을 관리합니다. |
+
+### APM / 모니터링
+
+| 기술 | 역할 | 설명 |
+|:----:|------|------|
+| <img src="https://img.shields.io/badge/Scouter-2C2C2C?style=flat&logo=data:image/svg+xml;base64,&logoColor=white" alt="Scouter"> <br> **Scouter** | **APM (Application Performance Monitoring)** | **Jennifer의 오픈소스 대안**입니다. Java Agent(`-javaagent`) 방식으로 Tomcat에 부착되어 **TPS, 응답시간, Active Service, JVM 힙/GC** 등을 실시간으로 수집합니다. Scouter Server(6100 포트)가 Agent 데이터를 수집·저장하고, Scouter Client에서 XLog 차트로 시각화합니다. |
+| <img src="https://img.shields.io/badge/Prometheus-E6522C?style=flat&logo=prometheus&logoColor=white" alt="Prometheus"> <br> **Prometheus** | **메트릭 수집 및 시계열 DB** | Pull 방식으로 각 Exporter(Node Exporter, Nginx Exporter)에서 **CPU, 메모리, 디스크, 네트워크, HTTP 요청 수** 등의 메트릭을 15초 간격으로 스크래핑합니다. 15일간 데이터를 보관하며 PromQL로 조회할 수 있습니다. |
+| <img src="https://img.shields.io/badge/Grafana-F46800?style=flat&logo=grafana&logoColor=white" alt="Grafana"> <br> **Grafana** | **모니터링 대시보드** | Prometheus를 데이터소스로 연결하여 **서버 리소스, Nginx 트래픽, WAS 상태**를 시각화하는 대시보드를 제공합니다. 사전 구성된 대시보드(JSON)가 프로비저닝되어 구동 즉시 모니터링이 가능합니다. |
+| <img src="https://img.shields.io/badge/Node%20Exporter-E6522C?style=flat&logo=prometheus&logoColor=white" alt="Node Exporter"> <br> **Node Exporter** | **서버 리소스 메트릭 수집** | 호스트 시스템의 CPU 사용률, 메모리, 디스크 I/O, 네트워크 트래픽 등 OS 레벨 메트릭을 Prometheus 형식으로 노출합니다. |
+| <img src="https://img.shields.io/badge/Nginx%20Exporter-009639?style=flat&logo=nginx&logoColor=white" alt="Nginx Exporter"> <br> **Nginx Exporter** | **Nginx 메트릭 수집** | Nginx의 `stub_status` 모듈에서 활성 연결 수, 요청 처리량, 응답 코드별 카운트를 가져와 Prometheus에 노출합니다. |
+
+### 인증 / 보안
+
+| 기술 | 역할 | 설명 |
+|:----:|------|------|
+| <img src="https://img.shields.io/badge/Keycloak-4D4D4D?style=flat&logo=keycloak&logoColor=white" alt="Keycloak"> <br> **Keycloak 24.0** | **SSO / 통합 인증 서버** | **OpenID Connect(OIDC)** 프로토콜 기반의 싱글 사인온(SSO) 서버입니다. `middleware-realm`을 사전 구성하여 사용자 인증·인가를 중앙에서 관리합니다. Spring Security와 연동하여 `/secured/**` 경로에 접근 시 Keycloak 로그인 페이지로 리다이렉트됩니다. |
+| <img src="https://img.shields.io/badge/OpenSSL-721412?style=flat&logo=openssl&logoColor=white" alt="OpenSSL"> <br> **OpenSSL (자체 CA)** | **SSL/TLS 인증서 발급** | 자체 CA(Certificate Authority)를 구축하여 서버 인증서를 발급합니다. Nginx에서 HTTPS(443)를 제공하며, 인증서 체인(`server-chain.crt`)으로 클라이언트-서버 간 암호화 통신을 보장합니다. |
+
+### 애플리케이션 / 인프라
+
+| 기술 | 역할 | 설명 |
+|:----:|------|------|
+| <img src="https://img.shields.io/badge/Spring%20Boot-6DB33F?style=flat&logo=springboot&logoColor=white" alt="Spring Boot"> <br> **Spring Boot 3.x** | **백엔드 애플리케이션** | Tomcat 위에서 구동되는 REST API 애플리케이션입니다. Health Check 엔드포인트(`/health`, `/api/health`), Actuator 메트릭, Keycloak 연동 보안 컨트롤러를 포함합니다. |
+| <img src="https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white" alt="Docker"> <br> **Docker Compose** | **컨테이너 오케스트레이션** | 10개 서비스(Nginx, Tomcat×2, MySQL, Keycloak, Scouter, Prometheus, Grafana, Node Exporter, Nginx Exporter)를 **단일 YAML 파일**로 정의하여 `docker-compose up -d` 한 줄로 전체 환경을 구동합니다. |
+
+---
+
+## 데모 실행 방법
+
+### 1. 전체 환경 구동
+
+```bash
+# 클론
+git clone https://github.com/iamywl/Middleware_Hello.git
+cd Middleware_Hello
+
+# 전체 서비스 구동 (10개 컨테이너)
+docker-compose up -d
+
+# 구동 상태 확인
+docker-compose ps
+```
+
+### 2. 서비스 접속
+
+| 서비스 | URL | 계정 |
+|--------|-----|------|
+| **WEB (Nginx)** | `https://localhost` | - |
+| **Grafana 대시보드** | `http://localhost:3000` | admin / admin |
+| **Keycloak SSO** | `http://localhost:8080` | admin / admin |
+| **Prometheus** | `http://localhost:9090` | - |
+| **Scouter Server** | `localhost:6100` (Scouter Client 연결) | - |
+
+### 3. 데모 시나리오
+
+```bash
+# ① 로드밸런싱 확인 - 요청마다 Tomcat #1, #2가 번갈아 응답
+curl -k https://localhost/api/health
+curl -k https://localhost/api/health
+
+# ② Health Check - 전체 시스템 상태 점검
+./scripts/health-check.sh
+
+# ③ Grafana에서 대시보드 확인
+#    → http://localhost:3000 접속 → Middleware Overview 대시보드
+
+# ④ SSO 테스트 - Keycloak 로그인 페이지로 리다이렉트 확인
+curl -k https://localhost/secured/profile
+
+# ⑤ 로그 분석
+./scripts/log-analyzer.sh
+```
+
+### 4. 환경 종료
+
+```bash
+docker-compose down        # 컨테이너 종료
+docker-compose down -v     # 컨테이너 + 볼륨 데이터 삭제
+```
+
+---
 
 ## 프로젝트 구조
 
 ```
 middle_ware/
-├── docker-compose.yml          # 전체 환경 원클릭 구동
+├── docker-compose.yml          # 전체 환경 원클릭 구동 (10개 서비스)
 ├── configs/
 │   ├── nginx/                  # Nginx 리버스 프록시 + SSL 설정
-│   ├── tomcat/                 # Tomcat #1, #2 설정
+│   ├── tomcat/                 # Tomcat #1, #2 server.xml
 │   ├── scouter/                # Scouter Server/Agent 설정
-│   ├── keycloak/               # Realm 설정
-│   ├── prometheus/             # 메트릭 수집 설정
-│   └── grafana/                # 대시보드 JSON
+│   ├── keycloak/               # Realm 설정 (OIDC)
+│   ├── prometheus/             # 메트릭 수집 대상 설정
+│   └── grafana/                # 대시보드 JSON + 프로비저닝
 ├── app/                        # Spring Boot 샘플 애플리케이션
-├── scripts/                    # 운영 자동화 스크립트
-├── docs/                       # 아키텍처, 트러블슈팅 문서
-└── screenshots/                # 대시보드, SSO 흐름 캡처
+├── scripts/                    # 운영 자동화 스크립트 (8종)
+│   ├── start.sh / stop.sh      # 서비스 시작/종료
+│   ├── health-check.sh         # 일일 서버 점검
+│   ├── log-analyzer.sh         # 로그 분석
+│   ├── backup.sh               # 백업
+│   ├── cert-renew.sh           # 인증서 갱신
+│   ├── generate-certs.sh       # SSL 인증서 생성
+│   └── status.sh               # 상태 확인
+└── docs/                       # 기술 문서
 ```
 
-## 단계별 진행 계획
-
-| 주차 | 단계 | 핵심 내용 |
-|------|------|-----------|
-| 1~2 | 인프라 구축 | Nginx + Tomcat 이중화, 로드밸런싱, Spring Boot 배포 |
-| 3~4 | APM 모니터링 | Scouter Agent 연동, Prometheus + Grafana 대시보드 |
-| 5~6 | 보안 연동 | 자체 CA/SSL 인증서, Keycloak SSO (OIDC) |
-| 7~8 | 운영 자동화 | 셸 스크립트 자동화, 장애 시나리오 대응 훈련 |
-
-## 빠른 시작
-
-```bash
-# 전체 환경 구동
-docker-compose up -d
-
-# 상태 확인
-docker-compose ps
-
-# 접속
-# Web: https://localhost
-# Grafana: http://localhost:3000
-# Keycloak: http://localhost:8080
-# Scouter: localhost:6100
-```
-
-## 주요 기능
-
-- **WEB/WAS 이중화**: Nginx 로드밸런싱으로 Tomcat 2대에 트래픽 분산
-- **APM 모니터링**: Scouter로 TPS, 응답시간, JVM 상태 실시간 추적
-- **통합 인증**: Keycloak SSO를 통한 OIDC 기반 싱글 사인온
-- **SSL/PKI**: 자체 CA로 발급한 인증서 기반 HTTPS 통신
-- **운영 자동화**: 서버 점검, 로그 분석, 백업 셸 스크립트
-
-## 운영 스크립트
-
-```bash
-# 일일 서버 점검
-./scripts/health-check.sh
-
-# 로그 분석
-./scripts/log-analyzer.sh
-
-# 인증서 갱신
-./scripts/cert-renew.sh
-
-# 백업
-./scripts/backup.sh
-```
+---
 
 ## APM: Scouter vs Jennifer
 
-본 프로젝트에서는 APM으로 **Scouter**를 사용한다. Jennifer는 상용(유료) 제품이므로 사이드 프로젝트에서 사용할 수 없어, 같은 계열의 오픈소스인 Scouter로 대체하였다.
+본 프로젝트에서는 APM으로 **Scouter**를 사용합니다. Jennifer는 상용(유료) 제품이므로 사이드 프로젝트에서 사용할 수 없어, 같은 계열의 오픈소스인 Scouter로 대체하였습니다.
 
 | 항목 | Jennifer (상용) | Scouter (본 프로젝트) |
 |------|-----------------|----------------------|
@@ -114,7 +163,10 @@ docker-compose ps
 | 실시간 대시보드 | O | O |
 | 힙 덤프/쓰레드 분석 | O | O |
 
-Scouter는 Jennifer와 동일한 Java Agent 기반 APM으로, TPS/응답시간/JVM 힙/GC 모니터링 등 핵심 기능이 같다. 채용공고의 "Jennifer 기반 시스템 기술지원" 역량을 이 프로젝트 경험으로 어필할 수 있다.
+> Scouter는 Jennifer와 동일한 Java Agent 기반 APM으로, TPS/응답시간/JVM 힙/GC 모니터링 등 핵심 기능이 같습니다.
+> 채용공고의 "Jennifer 기반 시스템 기술지원" 역량을 이 프로젝트 경험으로 어필할 수 있습니다.
+
+---
 
 ## 문서
 
