@@ -46,6 +46,20 @@
 28. [Jennifer와의 비교](#28-jennifer와의-비교)
 29. [트러블슈팅](#29-트러블슈팅)
 
+**Part 5. 실습 과제**
+30. [실습 1 — 첫 번째 XLog 점 찍기](#30-실습-1--첫-번째-xlog-점-찍기) (★☆☆☆☆)
+31. [실습 2 — 대시보드 구성과 실시간 관찰](#31-실습-2--대시보드-구성과-실시간-관찰) (★★☆☆☆)
+32. [실습 3 — XLog 드래그로 느린 요청 필터링](#32-실습-3--xlog-드래그로-느린-요청-필터링) (★★☆☆☆)
+33. [실습 4 — 로드밸런싱 분포 확인](#33-실습-4--로드밸런싱-분포-확인) (★★★☆☆)
+34. [실습 5 — GC와 응답시간의 상관관계 분석](#34-실습-5--gc와-응답시간의-상관관계-분석) (★★★☆☆)
+35. [실습 6 — Thread Dump로 병목 진단](#35-실습-6--thread-dump로-병목-진단) (★★★☆☆)
+36. [실습 7 — 에러 추적과 빨간 점 분석](#36-실습-7--에러-추적과-빨간-점-분석) (★★★☆☆)
+37. [실습 8 — 전체 대시보드 시나리오 실행](#37-실습-8--전체-대시보드-시나리오-실행) (★★★★☆)
+38. [실습 9 — Object 생명주기 관찰](#38-실습-9--object-생명주기-관찰) (★★★★☆)
+39. [실습 10 — Agent 원격 설정 변경](#39-실습-10--agent-원격-설정-변경) (★★★★★)
+40. [실습 11 — 과거 데이터 조회와 일간 분석](#40-실습-11--과거-데이터-조회와-일간-분석) (★★★☆☆)
+41. [실습 12 — 종합 장애 시뮬레이션과 진단](#41-실습-12--종합-장애-시뮬레이션과-진단) (★★★★★)
+
 ---
 
 # Part 1. 개요와 설치
@@ -1645,6 +1659,735 @@ counter_enabled=false
 ```
 
 이후 동일한 부하 테스트를 실행하여 응답시간을 비교합니다. 일반적으로 **1~3% 이내**의 차이가 정상입니다.
+
+---
+
+# Part 5. 실습 과제
+
+> 아래 실습은 난이도 순으로 구성되어 있습니다. 각 실습을 완료하면 Scouter APM의 핵심 역량을 체득할 수 있습니다.
+> 모든 실습의 전제 조건: `docker-compose up -d`로 전체 환경이 구동 중이어야 합니다.
+
+## 30. 실습 1 — 첫 번째 XLog 점 찍기 (난이도: ★☆☆☆☆)
+
+### 목표
+
+Scouter Client를 설치하고 접속하여, 직접 보낸 요청이 XLog에 점으로 나타나는 것을 확인합니다.
+
+### 실습 순서
+
+```
+Step 1. Scouter Client 설치 (Ch.4 참고)
+Step 2. Scouter Client 실행 → 127.0.0.1:6100 접속 (admin/admin)
+Step 3. 좌측 Object에서 tomcat1 우클릭 → XLog 열기
+Step 4. 터미널에서 아래 명령 실행:
+```
+
+```bash
+curl -sk https://localhost/health
+```
+
+### 확인할 것
+
+- [ ] XLog 차트에 **파란색 점 1개**가 나타나는가?
+- [ ] 점의 Y축(응답시간)이 **100ms 이하**인가?
+- [ ] 점을 클릭했을 때 Profile에서 **URL: /health**가 보이는가?
+
+### 학습 포인트
+
+> 이 한 번의 curl 명령으로 일어난 일:
+> Agent가 Servlet 진입을 감지 → TraceContext 생성 → 메서드 실행 추적 → XLog Pack 생성 → UDP로 Server 전송 → Client에 실시간 Push → 점이 그려짐
+
+---
+
+## 31. 실습 2 — 대시보드 구성과 실시간 관찰 (난이도: ★★☆☆☆)
+
+### 목표
+
+6개의 모니터링 뷰를 한 화면에 배치하고, 부하를 주면서 모든 차트가 동시에 반응하는 것을 관찰합니다.
+
+### 실습 순서
+
+```
+Step 1. 아래 6개 뷰를 모두 열기:
+   - tomcat1 우클릭 → XLog
+   - tomcat1 우클릭 → Counter → TPS
+   - tomcat1 우클릭 → Counter → Active Service
+   - tomcat1 우클릭 → Counter → Heap Used
+   - tomcat1 우클릭 → Counter → GC Time
+   - tomcat1 우클릭 → Active Service EQ
+
+Step 2. 창을 드래그하여 한 화면에 6개가 다 보이도록 배치
+
+Step 3. 터미널에서 부하 생성:
+```
+
+```bash
+# 10병렬 × 100회 = 1000건 요청
+for i in $(seq 1 100); do
+  for j in $(seq 1 10); do
+    curl -sk https://localhost/ > /dev/null &
+  done
+  wait
+done
+```
+
+### 확인할 것
+
+- [ ] **XLog**: 점이 대량으로 찍히는가?
+- [ ] **TPS**: 0에서 상승하여 피크를 찍는가?
+- [ ] **Active Service**: 부하 중에 숫자가 올라가는가?
+- [ ] **Heap Used**: 메모리 사용량이 증가하는가?
+- [ ] **GC Time**: GC가 발생하는가? (Heap 상승 후 급락과 연관)
+- [ ] **Active Service EQ**: 녹색 막대가 나타나는가?
+
+### 학습 포인트
+
+> 하나의 부하 테스트로 **6개 뷰가 동시에 반응**합니다. 이것이 APM의 종합 모니터링 능력입니다.
+> 각 뷰는 같은 데이터의 다른 측면을 보여줍니다: XLog=개별 요청, TPS=처리량, Active=동시성, Heap/GC=자원 소모.
+
+---
+
+## 32. 실습 3 — XLog 드래그로 느린 요청 필터링 (난이도: ★★☆☆☆)
+
+### 목표
+
+다양한 URL에 대한 부하를 주고, XLog에서 특정 응답시간 범위의 요청만 드래그로 선택하여 분석합니다.
+
+### 실습 순서
+
+```
+Step 1. XLog 차트를 열어둠
+
+Step 2. 터미널에서 다양한 URL로 요청:
+```
+
+```bash
+# 빠른 요청 (/, /health)과 다양한 URL 혼합
+for i in $(seq 1 50); do
+  curl -sk https://localhost/ > /dev/null &
+  curl -sk https://localhost/health > /dev/null &
+  curl -sk https://localhost/info > /dev/null &
+done
+wait
+```
+
+```
+Step 3. XLog 차트에서 응답시간 200ms 이상인 영역을 마우스로 드래그
+Step 4. 팝업된 목록에서 각 요청을 클릭하여 Profile 확인
+```
+
+### 확인할 것
+
+- [ ] 드래그 선택 시 **해당 범위의 요청만** 목록에 나타나는가?
+- [ ] 각 요청의 **URL 경로** (/, /health, /info)가 다른가?
+- [ ] Profile에서 **메서드 호출 순서**가 URL마다 다르게 보이는가?
+
+### 학습 포인트
+
+> XLog 드래그 선택은 **"느린 요청만 골라서 분석"**하는 핵심 기술입니다.
+> 운영 환경에서 "갑자기 느려졌다"는 보고를 받았을 때, 해당 시간대의 XLog를 드래그하면 원인을 빠르게 파악할 수 있습니다.
+
+---
+
+## 33. 실습 4 — 로드밸런싱 분포 확인 (난이도: ★★★☆☆)
+
+### 목표
+
+tomcat1과 tomcat2 각각의 XLog와 TPS를 열어두고, Nginx 로드밸런싱이 균등하게 분배되는지 Scouter로 직접 확인합니다.
+
+### 실습 순서
+
+```
+Step 1. 뷰 열기 (총 4개):
+   - tomcat1 우클릭 → XLog
+   - tomcat2 우클릭 → XLog
+   - tomcat1 우클릭 → Counter → TPS
+   - tomcat2 우클릭 → Counter → TPS
+
+Step 2. 2개의 XLog 창을 좌우로, 2개의 TPS 창을 아래에 배치
+
+Step 3. 부하 생성:
+```
+
+```bash
+# 200건 요청 — Nginx가 Round Robin으로 분배
+for i in $(seq 1 200); do
+  curl -sk https://localhost/health > /dev/null
+done
+```
+
+### 확인할 것
+
+- [ ] 두 XLog 차트에 **비슷한 수의 점**이 찍히는가? (Round Robin이므로 약 100:100)
+- [ ] 두 TPS 차트의 **피크 값이 비슷**한가?
+- [ ] 한쪽에만 점이 몰리지 않는가?
+
+### 심화 — WAS 1대 중단 후 관찰
+
+```bash
+# tomcat2 중지
+docker stop mw-tomcat2
+
+# 요청 계속
+for i in $(seq 1 50); do curl -sk https://localhost/health > /dev/null; done
+
+# Scouter에서 확인:
+# - tomcat2의 Object가 회색으로 변경
+# - tomcat1의 TPS만 상승, tomcat2의 TPS = 0
+
+# 복구
+docker start mw-tomcat2
+```
+
+### 확인할 것 (심화)
+
+- [ ] tomcat2 중지 후 **Object 아이콘이 회색**으로 변하는가? (약 30초 후)
+- [ ] tomcat2 중지 상태에서 **tomcat1의 TPS가 2배**가 되는가?
+- [ ] tomcat2 재시작 후 Object가 다시 **파란색**으로 돌아오는가?
+
+### 학습 포인트
+
+> Scouter로 **로드밸런싱이 정상 동작하는지** 실시간 검증할 수 있습니다.
+> 운영 환경에서 "특정 서버에 트래픽이 몰린다"는 상황도 두 Object의 TPS를 비교하면 바로 확인 가능합니다.
+
+---
+
+## 34. 실습 5 — GC와 응답시간의 상관관계 분석 (난이도: ★★★☆☆)
+
+### 목표
+
+대량의 객체를 생성하는 부하를 줘서 GC를 유발하고, GC 발생 시점과 XLog 응답시간 상승의 상관관계를 직접 확인합니다.
+
+### 실습 순서
+
+```
+Step 1. 뷰 열기 (3개):
+   - tomcat1 우클릭 → XLog
+   - tomcat1 우클릭 → Counter → Heap Used
+   - tomcat1 우클릭 → Counter → GC Time
+
+Step 2. 3개 창을 세로로 배치하여 시간축을 맞춤
+
+Step 3. 대량 요청으로 객체 생성 유도:
+```
+
+```bash
+# /info 엔드포인트는 Runtime 객체를 조회하므로 객체 생성이 많음
+# 20병렬 × 200회 = 4000건
+for round in $(seq 1 200); do
+  for p in $(seq 1 20); do
+    curl -sk https://localhost/info > /dev/null &
+  done
+  wait
+done
+```
+
+### 확인할 것
+
+- [ ] **Heap Used**: 톱니 모양 (상승→급락→상승→급락) 패턴이 보이는가?
+- [ ] **GC Time**: Heap 급락 시점에 GC Time 스파이크가 나타나는가?
+- [ ] **XLog**: GC Time 스파이크 시점에 응답시간이 높은 점이 나타나는가?
+
+### 그래프 정렬 비교
+
+```
+시간축 →     t1        t2        t3
+             │         │         │
+Heap Used:   /\        /\        /\
+            /  ↘      /  ↘      /  ↘   ← GC로 급락
+           /    \    /    \    /    \
+──────────/──────\──/──────\──/──────\──
+
+GC Time:      █         █         █     ← 급락 시점에 스파이크
+
+XLog (ms):   ●●        ●●        ●●    ← GC 시점에 높은 점
+           ●●  ●●    ●●  ●●    ●●  ●●
+```
+
+### 학습 포인트
+
+> **"GC가 발생하면 모든 쓰레드가 멈추므로 응답시간이 올라간다"**는 이론을 직접 눈으로 확인합니다.
+> 운영 환경에서 "주기적으로 느려진다"는 증상이 있으면, Heap과 GC Time을 함께 보는 것이 첫 번째 진단 단계입니다.
+
+---
+
+## 35. 실습 6 — Thread Dump로 병목 진단 (난이도: ★★★☆☆)
+
+### 목표
+
+부하 상태에서 Thread Dump를 뜨고, 현재 어떤 쓰레드가 어떤 일을 하고 있는지 분석합니다.
+
+### 실습 순서
+
+```
+Step 1. 터미널에서 지속적 부하 생성 (백그라운드):
+```
+
+```bash
+# 30초간 지속적 부하
+for i in $(seq 1 300); do
+  curl -sk https://localhost/ > /dev/null &
+  curl -sk https://localhost/health > /dev/null &
+  curl -sk https://localhost/info > /dev/null &
+  sleep 0.1
+done &
+LOAD_PID=$!
+```
+
+```
+Step 2. 부하가 돌고 있는 동안 Scouter Client에서:
+   - tomcat1 우클릭 → Thread List
+   - 또는 tomcat1 우클릭 → Thread Dump
+
+Step 3. Thread 목록을 관찰
+```
+
+### 확인할 것
+
+- [ ] `http-nio-8080-exec-*` 쓰레드 중 **RUNNABLE** 상태인 것이 있는가?
+- [ ] RUNNABLE 쓰레드의 스택트레이스에서 **HealthController** 또는 **SecuredController**가 보이는가?
+- [ ] **WAITING** 상태의 쓰레드는 무엇을 기다리고 있는가?
+- [ ] `GC task thread` 등의 **JVM 내부 쓰레드**가 보이는가?
+
+```
+Step 4. 부하 중지:
+```
+
+```bash
+kill $LOAD_PID 2>/dev/null; wait 2>/dev/null
+```
+
+```
+Step 5. 부하 중지 후 다시 Thread Dump를 떠서 비교
+```
+
+### 확인할 것 (비교)
+
+- [ ] 부하 중: exec 쓰레드가 **RUNNABLE** 상태
+- [ ] 부하 후: exec 쓰레드가 **WAITING/TIMED_WAITING** 상태 (요청 대기)
+- [ ] 쓰레드 상태 변화가 **Active Service 차트의 변화**와 일치하는가?
+
+### 학습 포인트
+
+> Thread Dump는 **"지금 이 순간 서버가 정확히 무슨 일을 하고 있는지"**를 보여주는 스냅샷입니다.
+> 운영 환경에서 "서버가 멈췄다"는 상황에서 Thread Dump를 뜨면, BLOCKED된 쓰레드 → 락을 잡고 있는 쓰레드 → 진짜 원인을 추적할 수 있습니다.
+
+---
+
+## 36. 실습 7 — 에러 추적과 빨간 점 분석 (난이도: ★★★☆☆)
+
+### 목표
+
+존재하지 않는 URL로 요청을 보내 의도적으로 에러를 발생시키고, XLog에서 빨간 점(에러 트랜잭션)을 추적합니다.
+
+### 실습 순서
+
+```
+Step 1. XLog 차트를 열어둠
+
+Step 2. 정상 요청과 에러 요청을 섞어서 보냄:
+```
+
+```bash
+# 정상 요청 10건
+for i in $(seq 1 10); do
+  curl -sk https://localhost/health > /dev/null
+done
+
+# 에러 요청 10건 (존재하지 않는 URL)
+for i in $(seq 1 10); do
+  curl -sk https://localhost/nonexistent/path > /dev/null
+done
+
+# 정상 요청 10건
+for i in $(seq 1 10); do
+  curl -sk https://localhost/info > /dev/null
+done
+```
+
+```
+Step 3. XLog에서 빨간 점을 찾아 클릭
+Step 4. Profile에서 에러 정보 확인
+```
+
+### 확인할 것
+
+- [ ] **파란 점**(정상)과 **빨간 점**(에러)이 구분되어 나타나는가?
+- [ ] 빨간 점의 Profile에서 **에러 메시지**가 확인되는가?
+- [ ] 빨간 점의 **URL 경로**가 `/nonexistent/path`인가?
+
+### 학습 포인트
+
+> XLog의 색상은 즉각적인 이상 징후 파악 도구입니다.
+> 빨간 점이 갑자기 늘어나면 에러가 급증한 것이므로, 클릭하여 원인을 바로 확인할 수 있습니다.
+> 이것은 로그를 grep하는 것보다 훨씬 빠른 진단 방법입니다.
+
+---
+
+## 37. 실습 8 — 전체 대시보드 시나리오 실행 (난이도: ★★★★☆)
+
+### 목표
+
+`load-test.sh`의 대시보드 시나리오(시나리오 6)를 실행하면서, 7개 Phase에 따른 모든 그래프의 변화를 관찰하고 기록합니다.
+
+### 실습 순서
+
+```
+Step 1. Scouter Client에서 최대한 많은 뷰를 열기:
+   - XLog (tomcat1 + tomcat2)
+   - TPS (tomcat1 + tomcat2)
+   - Active Service
+   - Active Service EQ
+   - Heap Used
+   - GC Time
+   - CPU
+   - Alert
+
+Step 2. 터미널에서:
+```
+
+```bash
+./scripts/load-test.sh 6
+```
+
+```
+Step 3. 스크립트가 실행되는 동안 (~2.5분) 화면 주시
+Step 4. 각 Phase 전환 시점의 그래프 변화를 관찰 (스크립트가 Phase를 출력함)
+```
+
+### Phase별 관찰 기록표
+
+아래 표를 채워가면서 관찰합니다:
+
+| Phase | XLog 변화 | TPS | Active Service | Heap | GC | EQ 색상 |
+|-------|----------|-----|----------------|------|----|---------|
+| 1. Warm-up | | | | | | |
+| 2. Ramp-up | | | | | | |
+| 3. Burst | | | | | | |
+| 4. Mixed Heavy | | | | | | |
+| 5. Error Injection | | | | | | |
+| 6. Recovery | | | | | | |
+| 7. Spike | | | | | | |
+
+### 확인할 것
+
+- [ ] **Phase 3 (Burst)** 에서 TPS가 **최고치**를 기록하는가?
+- [ ] **Phase 5 (Error)** 에서 XLog에 **빨간 점**이 나타나는가?
+- [ ] **Phase 6 (Recovery)** 에서 모든 지표가 **점진적으로 하강**하는가?
+- [ ] **Phase 7 (Spike)** 에서 모든 지표가 **마지막 급등** 후 안정되는가?
+- [ ] tomcat1과 tomcat2의 TPS가 **비슷하게 분배**되는가? (Round Robin)
+
+### 학습 포인트
+
+> 이 실습은 APM 모니터링의 **종합 시뮬레이션**입니다.
+> 실제 운영 환경에서 일어나는 상황(트래픽 증가, 폭주, 에러 급증, 복구)을 2.5분에 압축 체험합니다.
+> "그래프가 이렇게 움직이면 이런 상황이다"라는 **패턴 인식 능력**을 기르는 것이 목표입니다.
+
+---
+
+## 38. 실습 9 — Object 생명주기 관찰 (난이도: ★★★★☆)
+
+### 목표
+
+Tomcat 컨테이너를 중지/시작/재빌드하면서, Scouter Client의 Object 상태 변화를 관찰합니다.
+
+### 실습 순서
+
+```
+Step 1. Scouter Client 좌측 Object 패널 주시
+   현재 상태: tomcat1(파란), tomcat2(파란)
+
+Step 2. Tomcat #2 중지:
+```
+
+```bash
+docker stop mw-tomcat2
+```
+
+```
+Step 3. Scouter Client에서 tomcat2 Object 관찰
+   - 즉시 변하지 않음
+   - 약 30초 후 (obj_deadtime=30000) 회색으로 변경
+
+Step 4. Tomcat #2 재시작:
+```
+
+```bash
+docker start mw-tomcat2
+```
+
+```
+Step 5. tomcat2가 다시 파란색으로 돌아오는 것 확인
+
+Step 6. 컨테이너 재빌드 (심화):
+```
+
+```bash
+docker-compose up --build -d tomcat2
+```
+
+```
+Step 7. Object 패널에서 tomcat2가 일시적으로 2개 보이는 현상 관찰
+   - 새 tomcat2 (Active, 파란)
+   - 이전 tomcat2 (Dead, 회색) → 30초 후 자동 제거
+```
+
+### 확인할 것
+
+- [ ] `docker stop` 후 **정확히 30초** 후에 Object가 회색으로 변하는가?
+- [ ] `docker start` 후 Object가 **즉시** 파란색으로 돌아오는가?
+- [ ] 재빌드 시 **일시적으로 중복 Object**가 보이는가?
+- [ ] Dead Object가 **자동으로 사라지는** 것을 확인할 수 있는가?
+
+### 학습 포인트
+
+> `obj_deadtime=30000`은 **"30초간 Heartbeat가 없으면 죽은 것으로 간주"**라는 의미입니다.
+> 이 값을 이해하면 운영 환경에서 "Agent가 갑자기 사라졌다", "Object가 중복으로 보인다" 같은 상황을 즉시 해석할 수 있습니다.
+
+---
+
+## 39. 실습 10 — Agent 원격 설정 변경 (난이도: ★★★★★)
+
+### 목표
+
+Scouter Client에서 Agent 설정을 **원격으로 변경**하고, 변경 결과를 실시간으로 확인합니다.
+
+### 실습 순서
+
+```
+Step 1. tomcat1 우클릭 → Configure 선택
+   - 현재 Agent의 모든 설정값이 표시됨
+
+Step 2. 설정값 확인:
+   - hook_method_patterns = com.middleware.demo.*.*
+   - xlog_sampling_enabled = false
+   - profile_step_max_count = 1024
+
+Step 3. XLog를 열어둔 상태에서 요청 보내기:
+```
+
+```bash
+for i in $(seq 1 20); do curl -sk https://localhost/health > /dev/null; done
+```
+
+```
+Step 4. XLog에 20개의 점이 찍히는 것 확인
+
+Step 5. Configure에서 xlog_sampling_enabled = true로 변경
+   - xlog_sampling_step1 = 100 (TPS 100 이하에서 50% 샘플링)
+   → Apply 클릭
+
+Step 6. 같은 요청을 다시 보내기:
+```
+
+```bash
+for i in $(seq 1 20); do curl -sk https://localhost/health > /dev/null; done
+```
+
+```
+Step 7. XLog에 찍히는 점의 수가 줄어드는지 확인 (샘플링 적용)
+
+Step 8. 원래대로 복원: xlog_sampling_enabled = false → Apply
+```
+
+### 확인할 것
+
+- [ ] Configure 뷰에서 **현재 Agent 설정**이 모두 보이는가?
+- [ ] 설정 변경 후 **Agent 재시작 없이** 바로 적용되는가?
+- [ ] 샘플링 활성화 시 **XLog 점의 수가 감소**하는가?
+- [ ] 설정을 원복하면 **다시 모든 점**이 찍히는가?
+
+### 학습 포인트
+
+> Agent 원격 설정 변경은 **운영 환경에서 매우 유용**한 기능입니다.
+> 트래픽이 많을 때 샘플링을 켜서 Server 부하를 줄이고, 문제 분석 시 샘플링을 끄고 모든 요청을 추적하는 등,
+> **서비스 재시작 없이** 유연하게 모니터링 전략을 조정할 수 있습니다.
+
+---
+
+## 40. 실습 11 — 과거 데이터 조회와 일간 분석 (난이도: ★★★☆☆)
+
+### 목표
+
+실시간 모니터링뿐 아니라, 과거 시간대의 XLog와 Counter를 조회하는 방법을 익힙니다.
+
+### 실습 순서
+
+```
+Step 1. 먼저 데이터를 쌓기 위해 부하 생성:
+```
+
+```bash
+# 1분간 지속적 부하
+for i in $(seq 1 60); do
+  curl -sk https://localhost/health > /dev/null
+  curl -sk https://localhost/info > /dev/null
+  sleep 1
+done
+```
+
+```
+Step 2. 5분 정도 기다린 후 과거 데이터 조회:
+
+Step 3. tomcat1 우클릭 → Load XLog
+   - From: 부하를 줬던 시작 시각
+   - To: 부하가 끝난 시각
+   → OK 클릭
+
+Step 4. 과거 시간대의 XLog가 로드되어 표시됨
+
+Step 5. 메뉴바 → Daily Counter 선택
+   - tomcat1 선택 → TPS, Heap Used 등 확인
+   - 오늘 하루 동안의 Counter 추이를 한눈에 파악
+```
+
+### 확인할 것
+
+- [ ] **Load XLog**로 과거 시간대의 트랜잭션을 조회할 수 있는가?
+- [ ] 과거 XLog에서 **점 클릭 → Profile 조회**가 가능한가?
+- [ ] **Daily Counter**에서 오늘 하루의 TPS/Heap 추이가 보이는가?
+- [ ] 부하를 줬던 시간대에 **TPS 피크**가 Daily Counter에 나타나는가?
+
+### 학습 포인트
+
+> 과거 데이터 조회는 **사후 분석(Post-mortem Analysis)**의 핵심입니다.
+> "어제 오후 3시에 장애가 있었다"는 보고를 받았을 때, Load XLog로 해당 시간대를 로드하면
+> 어떤 요청이 느렸는지, 에러가 있었는지를 그때의 데이터로 분석할 수 있습니다.
+
+---
+
+## 41. 실습 12 — 종합 장애 시뮬레이션과 진단 (난이도: ★★★★★)
+
+### 목표
+
+WAS 장애 상황을 시뮬레이션하고, Scouter로 장애를 감지 → 원인 분석 → 복구 확인하는 전체 사이클을 수행합니다.
+
+### 시나리오
+
+> "사용자로부터 '사이트가 느려졌다'는 보고가 들어왔다. Scouter로 원인을 추적하라."
+
+### 실습 순서
+
+```
+Phase 1. 정상 상태 확인 (Baseline)
+```
+
+```bash
+# 정상 트래픽 20초간
+for i in $(seq 1 20); do
+  curl -sk https://localhost/health > /dev/null
+  sleep 1
+done
+```
+
+Scouter 확인: XLog 정상, TPS ~1, Active Service 0~1
+
+```
+Phase 2. 장애 주입 — Tomcat #2 중지
+```
+
+```bash
+docker stop mw-tomcat2
+```
+
+```
+Phase 3. 장애 상태에서 부하 (장애 관찰)
+```
+
+```bash
+# Tomcat 1대만 살아있는 상태에서 부하
+for i in $(seq 1 100); do
+  for j in $(seq 1 5); do
+    curl -sk https://localhost/ > /dev/null &
+  done
+  wait
+done
+```
+
+Scouter 확인:
+- tomcat2 Object가 회색 (Dead)
+- tomcat1의 TPS만 상승 (평소의 2배)
+- tomcat1의 Active Service 증가
+
+```
+Phase 4. Thread Dump 분석
+```
+
+- tomcat1 우클릭 → Thread Dump
+- `http-nio-8080-exec-*` 쓰레드의 상태 확인
+- RUNNABLE 쓰레드가 많으면 → 서버가 열심히 일하고 있음 (과부하)
+
+```
+Phase 5. 장애 복구
+```
+
+```bash
+docker start mw-tomcat2
+```
+
+```
+Phase 6. 복구 확인
+```
+
+```bash
+# 복구 후 부하
+for i in $(seq 1 50); do
+  curl -sk https://localhost/health > /dev/null
+done
+```
+
+Scouter 확인:
+- tomcat2 Object가 파란색으로 복구
+- TPS가 tomcat1, tomcat2에 균등 분배
+- Active Service 정상 수준으로 복귀
+
+### 진단 보고서 작성 연습
+
+실습 후 아래 형식으로 정리해 봅니다:
+
+```
+장애 보고서
+──────────
+발생 시각: ____
+감지 방법: Scouter Object 패널에서 tomcat2 Dead 확인
+영향 범위: tomcat1에 트래픽 집중, TPS __→__ 증가, Active Service __→__ 증가
+원인: tomcat2 프로세스 중지 (docker stop)
+복구 시각: ____
+복구 방법: docker start mw-tomcat2
+복구 확인: Object 파란색 전환, TPS 균등 분배 정상화
+```
+
+### 학습 포인트
+
+> 이 실습은 **실제 운영 장애 대응 사이클**을 시뮬레이션합니다:
+> 1. 정상 Baseline 파악
+> 2. 이상 징후 감지 (Object Dead, TPS 편중)
+> 3. Thread Dump 등으로 원인 분석
+> 4. 복구 조치
+> 5. 복구 후 정상화 확인
+>
+> 이 프로세스를 몸에 익혀두면, 실제 장애 상황에서 당황하지 않고 체계적으로 대응할 수 있습니다.
+
+---
+
+## 실습 체크리스트 요약
+
+| 실습 | 난이도 | 핵심 학습 | 소요 시간 |
+|------|--------|----------|----------|
+| 실습 1: 첫 XLog 점 | ★☆☆☆☆ | Agent→Server→Client 데이터 흐름 이해 | 5분 |
+| 실습 2: 대시보드 구성 | ★★☆☆☆ | 6개 뷰의 역할과 상관관계 | 10분 |
+| 실습 3: XLog 드래그 | ★★☆☆☆ | 느린 요청 필터링과 Profile 분석 | 10분 |
+| 실습 4: 로드밸런싱 분포 | ★★★☆☆ | 다중 WAS의 트래픽 분배 검증 | 15분 |
+| 실습 5: GC 상관관계 | ★★★☆☆ | GC↔응답시간 인과 관계 확인 | 15분 |
+| 실습 6: Thread Dump | ★★★☆☆ | 쓰레드 상태 분석과 병목 진단 | 15분 |
+| 실습 7: 에러 추적 | ★★★☆☆ | 빨간 점 분석과 에러 프로파일링 | 10분 |
+| 실습 8: 전체 시나리오 | ★★★★☆ | 7-Phase 종합 모니터링 | 20분 |
+| 실습 9: Object 생명주기 | ★★★★☆ | Agent 연결/해제/재빌드 관찰 | 15분 |
+| 실습 10: 원격 설정 | ★★★★★ | 운영 중 Agent 설정 동적 변경 | 15분 |
+| 실습 11: 과거 데이터 | ★★★☆☆ | 사후 분석 (Post-mortem) | 10분 |
+| 실습 12: 장애 시뮬레이션 | ★★★★★ | 장애 감지→분석→복구 전체 사이클 | 30분 |
+
+> **추천 학습 경로**: 실습 1 → 2 → 3 → 7 → 4 → 5 → 6 → 8 → 11 → 9 → 10 → 12
 
 ---
 
