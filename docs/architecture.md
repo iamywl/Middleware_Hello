@@ -69,11 +69,37 @@
 Client → Nginx(:443) → [Round Robin] → Tomcat1 or Tomcat2(:8080) → MySQL(:3306)
 ```
 
-### SSO 인증 요청
+### SSO 인증 요청 (OIDC Authorization Code Flow)
 ```
-Client → Nginx(:443) → Tomcat → (302 Redirect) → Keycloak(:8080)
-→ 로그인 → (Callback) → Tomcat → 인증 완료
+┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────────┐
+│ 브라우저  │     │  Nginx   │     │  Tomcat  │     │   Keycloak   │
+│(localhost)│     │  (:443)  │     │  (WAS)   │     │   (:8080)    │
+└────┬─────┘     └────┬─────┘     └────┬─────┘     └──────┬───────┘
+     │ 1. /secured/profile              │                   │
+     │──────────────────►│──────────────►│                   │
+     │                   │              │                   │
+     │ 2. 302 Redirect to localhost:8080 (authorization-uri) │
+     │◄──────────────────│◄──────────────│                   │
+     │                   │              │                   │
+     │ 3. 브라우저 → Keycloak 로그인 페이지 (localhost:8080)  │
+     │──────────────────────────────────────────────────────►│
+     │                   │              │                   │
+     │ 4. 사용자 로그인 후 callback (authorization code)      │
+     │◄──────────────────────────────────────────────────────│
+     │                   │              │                   │
+     │ 5. callback → Nginx → Tomcat     │                   │
+     │──────────────────►│──────────────►│                   │
+     │                   │              │ 6. code → token   │
+     │                   │              │   (keycloak:8080)  │
+     │                   │              │──────────────────►│
+     │                   │              │◄──────────────────│
+     │                   │              │                   │
+     │ 7. 인증 완료, 프로필 JSON 응답    │                   │
+     │◄──────────────────│◄──────────────│                   │
 ```
+
+> **Split URI 패턴**: 브라우저가 직접 접근하는 `authorization-uri`는 `localhost:8080`,
+> Tomcat이 서버 간 통신하는 `token-uri`/`jwk-set-uri`/`user-info-uri`는 Docker 내부 DNS `keycloak:8080`을 사용한다.
 
 ### 모니터링 데이터 흐름
 ```

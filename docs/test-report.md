@@ -206,7 +206,7 @@ Strict-Transport-Security: max-age=31536000; includeSubDomains
 # Realm 상태
 Keycloak middleware realm: HTTP 200
 
-# OIDC Discovery
+# OIDC Discovery (호스트에서 조회 시)
 issuer: http://localhost:8080/realms/middleware
 authorization: http://localhost:8080/realms/middleware/protocol/openid-connect/auth
 token: http://localhost:8080/realms/middleware/protocol/openid-connect/token
@@ -214,6 +214,10 @@ userinfo: http://localhost:8080/realms/middleware/protocol/openid-connect/userin
 ```
 
 **결과: PASS** - middleware Realm 정상, OIDC 엔드포인트 동작
+
+> **참고: Split URI 구성**
+>
+> 실제 `application.properties`에서는 **authorization-uri만 `localhost:8080`**, 나머지 URI(`token-uri`, `jwk-set-uri`, `user-info-uri`)는 **Docker 내부 DNS `keycloak:8080`**을 사용한다. 이는 브라우저(authorization)와 서버 간 통신(token/jwk/userinfo)의 네트워크 경로가 다르기 때문이다.
 
 ### 3-5. SSO 토큰 발급 (Resource Owner Password Grant)
 

@@ -708,10 +708,16 @@ OAuth 2.0은 **인가(Authorization)** 프레임워크이지, **인증(Authentic
 | **표준 Claim** | `sub`, `name`, `preferred_username`, `email` 등 |
 
 **Keycloak Discovery URL:**
-```
+```bash
+# 브라우저 또는 호스트에서 접근 시
 http://localhost:8080/realms/middleware/.well-known/openid-configuration
+
+# Docker 컨테이너 내부에서 접근 시
+http://keycloak:8080/realms/middleware/.well-known/openid-configuration
 ```
 이 URL을 호출하면 Authorization Endpoint, Token Endpoint, UserInfo Endpoint, 지원하는 Scope, 사용하는 서명 알고리즘 등 모든 설정이 JSON으로 반환된다.
+
+> **참고**: Docker 환경에서는 `issuer` 값이 `http://keycloak:8080/...`으로 반환된다. Spring Boot는 Docker 내부에서 이 값을 사용하므로 문제없지만, 브라우저에서 직접 접근할 때는 `localhost:8080`을 사용해야 한다.
 
 ### 3.4 JWT 토큰 구조
 
@@ -780,26 +786,38 @@ wibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn
                     └────────────────────────────────────────────┘
 ```
 
-Spring Boot `application.yml`에서 Keycloak을 IdP로 설정:
+Spring Boot `application.properties`에서 Keycloak을 IdP로 설정:
 
-```yaml
-spring:
-  security:
-    oauth2:
-      client:
-        registration:
-          keycloak:
-            client-id: middleware-app
-            client-secret: <client-secret>
-            scope: openid, profile, email
-            authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-        provider:
-          keycloak:
-            issuer-uri: http://keycloak:8080/realms/middleware
-            # Discovery URL에서 자동으로 아래 정보를 가져옴:
-            # authorization-uri, token-uri, user-info-uri, jwk-set-uri
+```properties
+# --- Client Registration ---
+spring.security.oauth2.client.registration.keycloak.client-id=middleware-app
+spring.security.oauth2.client.registration.keycloak.client-secret=<client-secret>
+spring.security.oauth2.client.registration.keycloak.scope=openid,profile,email
+spring.security.oauth2.client.registration.keycloak.authorization-grant-type=authorization_code
+spring.security.oauth2.client.registration.keycloak.redirect-uri={baseUrl}/login/oauth2/code/{registrationId}
+
+# --- Provider (Split URI 패턴) ---
+spring.security.oauth2.client.provider.keycloak.issuer-uri=http://keycloak:8080/realms/middleware
+spring.security.oauth2.client.provider.keycloak.authorization-uri=http://localhost:8080/realms/middleware/protocol/openid-connect/auth
+spring.security.oauth2.client.provider.keycloak.token-uri=http://keycloak:8080/realms/middleware/protocol/openid-connect/token
+spring.security.oauth2.client.provider.keycloak.jwk-set-uri=http://keycloak:8080/realms/middleware/protocol/openid-connect/certs
+spring.security.oauth2.client.provider.keycloak.user-info-uri=http://keycloak:8080/realms/middleware/protocol/openid-connect/userinfo
+spring.security.oauth2.client.provider.keycloak.user-name-attribute=preferred_username
 ```
+
+> **핵심: Split URI 패턴**
+>
+> Docker Compose 환경에서 OIDC를 구성할 때, **브라우저가 접근하는 URI**와 **서버 간 통신 URI**를 분리해야 한다.
+>
+> | URI | 호스트 | 이유 |
+> |-----|--------|------|
+> | `authorization-uri` | `localhost:8080` | **브라우저**가 직접 Keycloak 로그인 페이지에 접근해야 하므로 호스트 네트워크 주소 사용 |
+> | `issuer-uri` | `keycloak:8080` | Spring Boot가 **Docker 내부 네트워크**에서 Keycloak에 연결 |
+> | `token-uri` | `keycloak:8080` | Tomcat → Keycloak 간 **서버 사이드** 토큰 교환 |
+> | `jwk-set-uri` | `keycloak:8080` | JWT 서명 검증을 위한 공개키 조회 (서버 간 통신) |
+> | `user-info-uri` | `keycloak:8080` | Access Token으로 사용자 정보 조회 (서버 간 통신) |
+>
+> 브라우저는 Docker 내부 DNS(`keycloak:8080`)를 해석할 수 없기 때문에, 사용자가 직접 접근하는 `authorization-uri`만 `localhost:8080`을 사용한다.
 
 ### 3.7 jwt.io에서 토큰 디코딩
 

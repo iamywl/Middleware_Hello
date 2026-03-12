@@ -262,6 +262,41 @@ for i in $(seq 1 100); do curl -sk https://localhost/health > /dev/null; done
    - Protocol: `openid-connect`
    - Redirect URIs: `https://localhost/*`
 
+### Step 3.5: Split URI 패턴 이해하기
+
+Docker Compose 환경에서 OIDC를 사용할 때, **브라우저용 URI**와 **서버 간 통신 URI**를 분리해야 합니다.
+
+`application.properties`의 핵심 설정:
+
+```properties
+# ✅ 브라우저가 접근 → localhost 사용 (사용자 PC에서 Keycloak 로그인 페이지로 이동)
+spring.security.oauth2.client.provider.keycloak.authorization-uri=http://localhost:8080/realms/middleware/protocol/openid-connect/auth
+
+# ✅ 서버 간 통신 → Docker 내부 DNS(keycloak) 사용
+spring.security.oauth2.client.provider.keycloak.issuer-uri=http://keycloak:8080/realms/middleware
+spring.security.oauth2.client.provider.keycloak.token-uri=http://keycloak:8080/realms/middleware/protocol/openid-connect/token
+spring.security.oauth2.client.provider.keycloak.jwk-set-uri=http://keycloak:8080/realms/middleware/protocol/openid-connect/certs
+spring.security.oauth2.client.provider.keycloak.user-info-uri=http://keycloak:8080/realms/middleware/protocol/openid-connect/userinfo
+```
+
+**왜 분리해야 하는가?**
+
+```
+브라우저 (호스트 PC)                    Docker 내부 네트워크
+┌─────────────┐                       ┌─────────────────────┐
+│  사용자 PC   │──localhost:8080──────►│  Keycloak (:8080)   │
+│  (브라우저)  │                       │                     │
+└─────────────┘                       └─────────────────────┘
+                                              ▲
+┌─────────────────────┐                       │
+│  Tomcat (WAS)       │──keycloak:8080────────┘
+│  (Docker 컨테이너)   │  (Docker DNS로 해석)
+└─────────────────────┘
+```
+
+- 브라우저는 Docker 내부 DNS인 `keycloak`을 해석할 수 없음 → `localhost` 필요
+- Tomcat은 Docker 네트워크 안에 있으므로 `keycloak`으로 직접 접근 가능
+
 ### Step 4: SSO 로그인 플로우 테스트
 
 ```bash

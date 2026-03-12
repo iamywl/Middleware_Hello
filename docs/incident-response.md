@@ -1025,6 +1025,52 @@ echo "Keycloak Realm 백업 완료: $BACKUP_DIR/realm_backup_$TIMESTAMP.json"
 # crontab: 0 2 * * * /path/to/scripts/backup_keycloak.sh
 ```
 
+### 8.6 OIDC SSO 로그인 실패 트러블슈팅
+
+Docker Compose 환경에서 Keycloak OIDC 로그인이 실패하는 가장 흔한 원인은 **URI 호스트 설정 불일치**다.
+
+**증상:**
+- 브라우저에서 `ERR_NAME_NOT_RESOLVED` (keycloak 호스트를 찾을 수 없음)
+- `issuer` 값 불일치로 토큰 검증 실패
+- 로그인 페이지까지는 가지만 callback에서 500 에러 발생
+
+**원인과 해결 (Split URI 패턴):**
+
+```properties
+# ❌ 잘못된 설정: 모든 URI를 keycloak:8080으로 설정
+# → 브라우저가 keycloak 호스트를 해석할 수 없어 로그인 페이지 접근 불가
+spring.security.oauth2.client.provider.keycloak.authorization-uri=http://keycloak:8080/...
+
+# ❌ 잘못된 설정: 모든 URI를 localhost:8080으로 설정
+# → Tomcat 컨테이너 내부에서 localhost는 자기 자신이므로 token 교환 실패
+spring.security.oauth2.client.provider.keycloak.token-uri=http://localhost:8080/...
+
+# ✅ 올바른 설정: Split URI 패턴
+# 브라우저용 (localhost) — 사용자 PC에서 Keycloak에 직접 접근
+spring.security.oauth2.client.provider.keycloak.authorization-uri=http://localhost:8080/realms/middleware/protocol/openid-connect/auth
+
+# 서버 간 통신용 (Docker DNS) — Tomcat → Keycloak 내부 통신
+spring.security.oauth2.client.provider.keycloak.token-uri=http://keycloak:8080/realms/middleware/protocol/openid-connect/token
+spring.security.oauth2.client.provider.keycloak.jwk-set-uri=http://keycloak:8080/realms/middleware/protocol/openid-connect/certs
+spring.security.oauth2.client.provider.keycloak.user-info-uri=http://keycloak:8080/realms/middleware/protocol/openid-connect/userinfo
+```
+
+**확인 방법:**
+
+```bash
+# 1. 브라우저에서 SSO 리다이렉트 확인
+curl -sk -o /dev/null -w "%{http_code} %{redirect_url}" https://localhost/secured/profile
+# 기대값: 302 http://localhost/oauth2/authorization/keycloak
+
+# 2. 리다이렉트 따라가기 — authorization-uri가 localhost:8080인지 확인
+curl -sk -o /dev/null -w "%{redirect_url}" -L --max-redirs 1 https://localhost/secured/profile
+# 기대값: http://localhost:8080/realms/middleware/protocol/openid-connect/auth?...
+
+# 3. Tomcat 컨테이너 내부에서 Keycloak 연결 테스트
+docker exec mw-tomcat1 curl -s http://keycloak:8080/realms/middleware/.well-known/openid-configuration | head -5
+# 기대값: JSON 응답 (issuer, authorization_endpoint 등)
+```
+
 ---
 
 ## 9. Docker 디스크 풀
