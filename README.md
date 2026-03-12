@@ -173,5 +173,11 @@ middle_ware/
 - **[사용자 가이드](docs/user-guide.md) - 처음부터 따라하는 전체 서비스 확인 가이드**
 - [개발계획서](개발계획서.md) - 상세 개발 계획 및 일정
 - [아키텍처 문서](docs/architecture.md) - 시스템 구성도 및 네트워크 구조
+- [Scouter APM 사용 가이드](docs/scouter-guide.md) - 설치, 접속, XLog/TPS/Heap 분석 방법
+- [성능 튜닝 가이드](docs/performance-tuning.md) - Nginx/Tomcat/JVM/MySQL 튜닝 및 벤치마크
+- [장애 대응 가이드](docs/incident-response.md) - OOM, GC Storm, Connection Pool 고갈 등 장애 시나리오별 대응
+- [보안 심화 가이드](docs/security-deep-dive.md) - TLS 핸드셰이크, OIDC 플로우, OWASP Top 10, Docker 보안
+- [모니터링 지표 가이드](docs/monitoring-metrics.md) - Golden Signals, SLI/SLO, PromQL 쿼리, Alert Rules
+- [인프라 설계 심화 가이드](docs/infrastructure-design.md) - LB 알고리즘, 배포 전략, HA 설계, 용량 계획
 - [트러블슈팅](docs/troubleshooting.md) - 장애 시나리오별 대응 내역
 - [테스트 보고서](docs/test-report.md) - 전체 26개 항목 테스트 결과

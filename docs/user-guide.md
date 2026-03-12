@@ -328,19 +328,82 @@ docker logs mw-tomcat2 2>&1 | grep -i scouter
 
 **확인 포인트**: `Scouter Agent` 관련 로그가 출력되면 Agent가 정상적으로 부착된 것입니다.
 
-### Step 3: Scouter Client로 모니터링 (선택)
+### Step 3: Scouter Client 설치 및 접속
 
-Scouter의 전체 기능을 보려면 별도의 Scouter Client(GUI)를 설치해야 합니다:
+Scouter의 전체 기능(XLog, TPS, Heap 등)을 시각적으로 보려면 별도의 **Scouter Client(GUI)**를 설치해야 합니다.
 
-1. [Scouter Client 다운로드](https://github.com/scouter-project/scouter/releases) 에서 OS에 맞는 Client 다운로드
-2. 실행 후 접속 정보 입력:
-   - **Server Address**: `127.0.0.1`
-   - **Port**: `6100`
-3. 접속 후 확인 가능한 항목:
-   - **XLog**: 개별 트랜잭션의 응답시간 분포 (점 하나 = 요청 하나)
-   - **TPS**: 초당 처리 건수
-   - **Active Service**: 현재 처리 중인 요청 수
-   - **Heap Memory**: JVM 힙 메모리 사용량 및 GC 발생
+> Scouter Client는 Homebrew에 등록되어 있지 않으므로 GitHub Releases에서 직접 다운로드합니다.
+
+#### macOS (Apple Silicon / M1~M4)
+
+```bash
+# 1. 다운로드 (aarch64 = Apple Silicon)
+curl -L -o /tmp/scouter-client-mac.tar.gz \
+  https://github.com/scouter-project/scouter/releases/download/v2.21.3/scouter.client.product-macosx.cocoa.aarch64.tar.gz
+
+# 2. 압축 해제
+mkdir -p ~/Applications/Scouter
+tar -xzf /tmp/scouter-client-mac.tar.gz -C ~/Applications/Scouter
+
+# 3. macOS 보안 속성 제거 (이 단계를 빠뜨리면 "손상된 앱" 경고가 뜹니다)
+xattr -cr ~/Applications/Scouter/scouter.client.app
+
+# 4. 실행
+open ~/Applications/Scouter/scouter.client.app
+```
+
+#### macOS (Intel)
+
+```bash
+# Intel Mac은 x86_64 버전을 다운로드합니다
+curl -L -o /tmp/scouter-client-mac.tar.gz \
+  https://github.com/scouter-project/scouter/releases/download/v2.21.3/scouter.client.product-macosx.cocoa.x86_64.tar.gz
+
+# 이후 동일
+mkdir -p ~/Applications/Scouter
+tar -xzf /tmp/scouter-client-mac.tar.gz -C ~/Applications/Scouter
+xattr -cr ~/Applications/Scouter/scouter.client.app
+open ~/Applications/Scouter/scouter.client.app
+```
+
+#### Windows
+
+1. [scouter.client.product-win32.win32.x86_64.zip](https://github.com/scouter-project/scouter/releases/download/v2.21.3/scouter.client.product-win32.win32.x86_64.zip) 다운로드
+2. 압축 해제 후 `scouter.exe` 실행
+
+#### Linux
+
+```bash
+curl -L -o /tmp/scouter-client-linux.tar.gz \
+  https://github.com/scouter-project/scouter/releases/download/v2.21.3/scouter.client.product-linux.gtk.x86_64.tar.gz
+tar -xzf /tmp/scouter-client-linux.tar.gz -C ~/
+~/scouter.client/scouter
+```
+
+### Step 4: Scouter Client 접속 설정
+
+Scouter Client가 실행되면 접속 정보를 입력합니다:
+
+| 항목 | 값 |
+|------|------|
+| **Server Address** | `127.0.0.1` |
+| **Port** | `6100` |
+| **ID** | `admin` |
+| **Password** | `admin` |
+
+### Step 5: Scouter Client에서 확인 가능한 항목
+
+접속 성공 후 아래 모니터링 항목을 확인할 수 있습니다:
+
+| 모니터링 항목 | 설명 | 확인 방법 |
+|--------------|------|-----------|
+| **XLog** | 개별 트랜잭션의 응답시간 분포 (점 하나 = 요청 하나) | Object 우클릭 → XLog 열기 |
+| **TPS** | 초당 처리 건수 | Object 우클릭 → TPS 열기 |
+| **Active Service** | 현재 처리 중인 요청 수 | 메인 화면에 표시 |
+| **Heap Memory** | JVM 힙 메모리 사용량 및 GC 발생 | Object 우클릭 → Heap Memory 열기 |
+| **Thread List** | 현재 활성 쓰레드 목록 | Object 우클릭 → Thread List |
+
+> XLog 차트에서 점을 클릭하면 해당 요청의 **SQL, API 호출 경로, 응답시간 상세**를 확인할 수 있습니다. 이것이 Jennifer와 동일한 APM 분석 방식입니다.
 
 ### Step 4: 부하 발생 후 모니터링 변화 관찰
 
