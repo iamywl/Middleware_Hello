@@ -168,16 +168,48 @@ middle_ware/
 
 ---
 
-## 문서
+## 문서 가이드
 
-- **[사용자 가이드](docs/user-guide.md) - 처음부터 따라하는 전체 서비스 확인 가이드**
-- [개발계획서](개발계획서.md) - 상세 개발 계획 및 일정
-- [아키텍처 문서](docs/architecture.md) - 시스템 구성도 및 네트워크 구조
-- [Scouter APM 사용 가이드](docs/scouter-guide.md) - 설치, 접속, XLog/TPS/Heap 분석 방법
-- [성능 튜닝 가이드](docs/performance-tuning.md) - Nginx/Tomcat/JVM/MySQL 튜닝 및 벤치마크
-- [장애 대응 가이드](docs/incident-response.md) - OOM, GC Storm, Connection Pool 고갈 등 장애 시나리오별 대응
-- [보안 심화 가이드](docs/security-deep-dive.md) - TLS 핸드셰이크, OIDC 플로우, OWASP Top 10, Docker 보안
-- [모니터링 지표 가이드](docs/monitoring-metrics.md) - Golden Signals, SLI/SLO, PromQL 쿼리, Alert Rules
-- [인프라 설계 심화 가이드](docs/infrastructure-design.md) - LB 알고리즘, 배포 전략, HA 설계, 용량 계획
-- [트러블슈팅](docs/troubleshooting.md) - 장애 시나리오별 대응 내역
-- [테스트 보고서](docs/test-report.md) - 전체 26개 항목 테스트 결과
+### 처음 시작하는 분 (순서대로 읽기)
+
+| 순서 | 문서 | 목적 | 소요 시간 |
+|:----:|------|------|:---------:|
+| 1 | **[사용자 가이드](docs/user-guide.md)** | 전체 환경 구동 및 각 서비스 동작 확인 | 30분 |
+| 2 | [아키텍처 문서](docs/architecture.md) | 시스템 전체 구성과 데이터 흐름 이해 | 15분 |
+| 3 | [Scouter APM 가이드](docs/scouter-guide.md) | Scouter Client 설치 → XLog/TPS/Heap 실습 | 30분 |
+| 4 | [모니터링 지표 가이드](docs/monitoring-metrics.md) | Prometheus/Grafana에서 PromQL 쿼리 실습 | 40분 |
+
+### 심화 학습 (주제별 선택)
+
+| 주제 | 문서 | 핵심 내용 |
+|------|------|-----------|
+| **성능** | [성능 튜닝 가이드](docs/performance-tuning.md) | Nginx worker, Tomcat maxThreads, JVM GC 튜닝, MySQL 최적화, ab/wrk 벤치마크 |
+| **장애** | [장애 대응 가이드](docs/incident-response.md) | OOM Kill, GC Storm, Connection Pool 고갈, 502/504 등 10개 시나리오별 원인→대응→예방 |
+| **보안** | [보안 심화 가이드](docs/security-deep-dive.md) | TLS 핸드셰이크 과정, OIDC/JWT 토큰 플로우, OWASP Top 10, Docker 보안 |
+| **인프라** | [인프라 설계 심화 가이드](docs/infrastructure-design.md) | LB 알고리즘 비교, Blue-Green/Canary 배포, HA 설계, 용량 계획, DR |
+
+### 참고 문서
+
+| 문서 | 설명 |
+|------|------|
+| [개발계획서](개발계획서.md) | 프로젝트 상세 개발 계획 및 일정 |
+| [트러블슈팅](docs/troubleshooting.md) | 구축 중 만난 장애 시나리오별 대응 내역 |
+| [테스트 보고서](docs/test-report.md) | 전체 26개 항목 테스트 결과 |
+
+### 면접 대비 추천 학습 경로
+
+```
+[1주차] 환경 구축 + 사용자 가이드 실습
+   ↓
+[2주차] Scouter APM 실습 + 모니터링 지표 (PromQL 직접 쿼리)
+   ↓
+[3주차] 성능 튜닝 실습 (ab/wrk로 Before/After 비교)
+   ↓
+[4주차] 장애 대응 시나리오 실습 (docker stop으로 장애 시뮬레이션)
+   ↓
+[5주차] 보안 심화 (openssl 명령어, curl로 OIDC 토큰 발급)
+   ↓
+[6주차] 인프라 설계 (Blue-Green 배포, 용량 계획 산정 실습)
+```
+
+> 각 문서에는 **실제 명령어와 설정 파일 예시**가 포함되어 있어, 읽기만 하지 말고 **직접 터미널에서 실행하면서 학습**하는 것을 권장합니다.
