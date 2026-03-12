@@ -1158,7 +1158,7 @@ Grafana 컨테이너 시작
 | `backup.sh` | MySQL 덤프 + 설정 파일 백업 | Cron: 매일 02:00 |
 | `generate-certs.sh` | 자체 서명 CA + 서버 인증서 최초 생성 | 초기 구축 시 1회 |
 | `cert-renew.sh` | 서버 인증서 갱신 (만료 전) | Cron: 월 1회 |
-| `load-test.sh` | 부하 테스트 (5개 시나리오) | 수동 / 성능 검증 시 |
+| `load-test.sh` | 부하 테스트 (6개 시나리오) | 수동 / 성능 검증 시 |
 
 ---
 
@@ -1172,7 +1172,7 @@ Grafana 컨테이너 시작
 ./scripts/load-test.sh [시나리오] [요청수] [동시성]
 ```
 
-### 14.2 5가지 테스트 시나리오
+### 14.2 6가지 테스트 시나리오
 
 #### 시나리오 1: health — 단일 엔드포인트 부하
 
@@ -1279,6 +1279,78 @@ Grafana 컨테이너 시작
 확인 포인트:
   ├── Phase 3에서 에러 0건이면 페일오버 성공
   └── Phase 5에서 50:50 복귀하면 자동 복구 성공
+```
+
+#### 시나리오 6: dashboard — 모든 그래프를 움직여라
+
+```bash
+./scripts/load-test.sh dashboard
+```
+
+```
+목적: Scouter + Grafana의 모든 패널이 동시에 반응하는 종합 부하
+소요: 약 2분 30초
+준비: 실행 전 Scouter Client + Grafana(localhost:3000) 화면을 열어둘 것
+
+7개 Phase로 구성:
+
+  Phase 1 (20초) 워밍업 — 기본 트래픽
+    → Scouter XLog에 점 생성 시작
+    → Grafana Nginx Requests/sec 상승
+
+  Phase 2 (20초) 혼합 엔드포인트 — 6개 API 동시 호출
+    → 다양한 응답 크기로 Network I/O 변화
+    → Scouter XLog에 응답시간 편차가 보이는 점 분포
+
+  Phase 3 (40초) 동시성 계단 — C=5 → 20 → 50 → 100
+    → Grafana Nginx Active Connections 계단식 증가
+    → Scouter Active Service EQ 막대 커짐
+    → Scouter Elapsed Time 점진 상승
+
+  Phase 4 (짧음) 순간 폭주 — 500회 동시 100
+    → Grafana CPU Usage 스파이크
+    → Scouter TPS 최고점 도달
+    → Scouter Heap Used 급등
+
+  Phase 5 (15초) 대용량 응답 — /actuator/prometheus 집중
+    → /actuator/prometheus는 수천 줄의 메트릭 텍스트 반환
+    → Grafana Network I/O TX(송신) 급등
+
+  Phase 6 (20초) 휴식 — GC 관찰
+    → 트래픽 완전 중단
+    → Scouter Heap Used 톱니 하락 (GC 회수)
+    → Scouter TPS → 0
+    → Grafana JVM Heap 하락
+
+  Phase 7 (15초) 재부하 — 회복 확인
+    → 모든 그래프 다시 활성화
+    → 응답시간이 Phase 1과 비슷하면 시스템 정상
+```
+
+각 Phase에서 어떤 그래프가 반응하는지:
+
+```
+                Phase1 Phase2 Phase3 Phase4 Phase5 Phase6 Phase7
+                워밍업  혼합   계단   폭주   대용량  휴식   재부하
+  ─────────────────────────────────────────────────────────────
+  Scouter:
+    XLog          ●      ●      ●      ●      ●      ·      ●
+    TPS           ▲      ▲      ▲▲     ▲▲▲    ▲▲     ·      ▲▲
+    Heap Used     ─      ─      ↗      ↗↗     ↗      ↘↘     ↗
+    Elapsed       ─      ─      ↗↗     ↗↗↗    ↗      ·      ─
+    Active EQ     │      │      ██     ████   ██     ·      ██
+    CPU           ─      ─      ↗      ↗↗↗    ↗      ↘      ↗
+  ─────────────────────────────────────────────────────────────
+  Grafana:
+    CPU Usage     ─      ─      ↗      ↗↗↗    ↗      ↘      ↗
+    Memory        ─      ─      ─      ↗      ─      ─      ─
+    Network I/O   ↗      ↗↗     ↗↗     ↗↗     ↗↗↗    ↘      ↗↗
+    Nginx Req/s   ▲      ▲      ▲▲     ▲▲▲    ▲▲     ·      ▲▲
+    Nginx Conn    │      │      ↗↗↗    ↗↗     ↗      ↘      ↗
+    JVM Heap T1   ─      ─      ↗      ↗↗     ↗      ↘↘     ↗
+    JVM Heap T2   ─      ─      ↗      ↗↗     ↗      ↘↘     ↗
+  ─────────────────────────────────────────────────────────────
+  ●=점 생성  ▲=상승  ↗=증가  ↘=감소  ─=평탄  ·=없음  █=활성
 ```
 
 ### 14.3 전체 시나리오 한 번에 실행
