@@ -262,7 +262,7 @@ for i in $(seq 1 100); do curl -sk https://localhost/health > /dev/null; done
    - Protocol: `openid-connect`
    - Redirect URIs: `https://localhost/*`
 
-### Step 3.5: Split URI 패턴 이해하기
+### Step 4: Split URI 패턴 이해하기
 
 Docker Compose 환경에서 OIDC를 사용할 때, **브라우저용 URI**와 **서버 간 통신 URI**를 분리해야 합니다.
 
@@ -297,7 +297,7 @@ spring.security.oauth2.client.provider.keycloak.user-info-uri=http://keycloak:80
 - 브라우저는 Docker 내부 DNS인 `keycloak`을 해석할 수 없음 → `localhost` 필요
 - Tomcat은 Docker 네트워크 안에 있으므로 `keycloak`으로 직접 접근 가능
 
-### Step 4: SSO 로그인 플로우 테스트
+### Step 5: SSO 로그인 플로우 테스트
 
 ```bash
 # 보호된 페이지에 접근 시도
@@ -322,7 +322,7 @@ curl -k https://localhost/secured/profile
 }
 ```
 
-### Step 5: 토큰 직접 발급해보기 (선택)
+### Step 6: 토큰 직접 발급해보기 (선택)
 
 OIDC Token Endpoint로 직접 토큰을 발급받을 수도 있습니다:
 
@@ -440,7 +440,7 @@ Scouter Client가 실행되면 접속 정보를 입력합니다:
 
 > XLog 차트에서 점을 클릭하면 해당 요청의 **SQL, API 호출 경로, 응답시간 상세**를 확인할 수 있습니다. 이것이 Jennifer와 동일한 APM 분석 방식입니다.
 
-### Step 4: 부하 발생 후 모니터링 변화 관찰
+### Step 6: 부하 발생 후 모니터링 변화 관찰
 
 ```bash
 # 부하 발생 (200회 요청)
@@ -553,3 +553,14 @@ docker-compose down -v
 | Prometheus | `http://localhost:9090` | - | 메트릭 조회 |
 | Scouter Server | `localhost:6100` | - | APM (Scouter Client 필요) |
 | MySQL | `localhost:3306` | root / root_password | DB 접속 (선택) |
+
+---
+
+## 관련 문서
+
+| 문서 | 설명 |
+|------|------|
+| [아키텍처 설계](architecture.md) | 시스템 아키텍처 이해 |
+| [Scouter APM 가이드](scouter-guide.md) | Scouter APM 상세 가이드 |
+| [보안 심층 분석](security-deep-dive.md) | Keycloak 보안 설정 상세 |
+| [트러블슈팅 가이드](troubleshooting.md) | 문제 해결 가이드 |

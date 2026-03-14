@@ -195,6 +195,7 @@ docker logs mw-tomcat2 --tail 10
 # 2. JVM 힙 사이즈 조정 (docker-compose.yml)
 # 현재 설정: -Xms256m -Xmx512m
 # 권장 변경: -Xms512m -Xmx1024m
+# (본 프로젝트의 Tomcat 컨테이너 메모리 제한(1.5GB) 기준, OOM 방지를 위해 최대 힙을 1GB로 설정)
 # 주의: 컨테이너 메모리 제한의 70~80%를 JVM 힙으로 설정
 #        나머지 20~30%는 Metaspace, 스레드 스택, Native 메모리용
 
@@ -408,6 +409,8 @@ docker exec mw-nginx nginx -s reload
 # 1. JVM 힙 사이즈 조정 (docker-compose.yml의 JAVA_OPTS)
 # 현재: -Xms256m -Xmx512m
 # 조정: -Xms1g -Xmx1g    (Xms와 Xmx를 동일하게 설정하여 힙 리사이징 오버헤드 제거)
+# (GC Storm 해소 목적: 힙 리사이징 자체가 GC를 유발하므로 초기/최대를 동일하게 고정함.
+#  Tomcat 컨테이너 메모리 제한(1.5GB) 기준, 힙 외 메타스페이스·스레드 스택 여유분 확보)
 #
 # 주의: 무조건 크게 잡으면 Full GC 한 번의 pause가 길어짐
 #       적정 사이즈를 찾아야 함 (모니터링 데이터 기반)
@@ -777,6 +780,7 @@ docker exec mw-nginx openssl x509 -in /etc/nginx/ssl/server.crt -noout -dates
 # 4. 인증서 만료까지 남은 일수 계산
 docker exec mw-nginx sh -c "
   expiry=\$(openssl x509 -in /etc/nginx/ssl/server.crt -noout -enddate | cut -d= -f2)
+  # Linux: date -d, macOS: date -jf (아래는 양쪽 모두 호환되는 fallback 구문)
   expiry_epoch=\$(date -d \"\$expiry\" +%s 2>/dev/null || date -jf '%b %d %T %Y %Z' \"\$expiry\" +%s)
   now_epoch=\$(date +%s)
   days_left=\$(( (expiry_epoch - now_epoch) / 86400 ))
@@ -824,7 +828,9 @@ DOMAIN="yourdomain.com"
 DAYS_THRESHOLD=30
 EXPIRY=$(echo | openssl s_client -servername $DOMAIN -connect $DOMAIN:443 2>/dev/null | \
   openssl x509 -noout -enddate | cut -d= -f2)
+# Linux
 EXPIRY_EPOCH=$(date -d "$EXPIRY" +%s)
+# macOS: EXPIRY_EPOCH=$(date -jf '%b %d %T %Y %Z' "$EXPIRY" +%s)
 NOW_EPOCH=$(date +%s)
 DAYS_LEFT=$(( (EXPIRY_EPOCH - NOW_EPOCH) / 86400 ))
 if [ $DAYS_LEFT -lt $DAYS_THRESHOLD ]; then
@@ -976,6 +982,8 @@ docker exec mw-mysql mysql -uroot -proot_password -e \
 # 2. Keycloak JVM 메모리 설정 (docker-compose.yml)
 #   environment:
 #     JAVA_OPTS_APPEND: "-Xms256m -Xmx512m"
+#   (Keycloak 컨테이너의 기본 메모리 제한(768MB) 기준. Tomcat보다 트래픽이 적고
+#    인증 요청만 처리하므로 512MB 힙으로 충분함)
 
 # 3. Keycloak 세션 타임아웃 조정
 #    Admin Console > Realm Settings > Sessions
@@ -1433,3 +1441,15 @@ ls -la "$LOG_DIR"
 [ ] Post-mortem 미팅 일정 잡기
 [ ] 재발 방지 대책 티켓 등록
 ```
+
+---
+
+## 관련 문서
+
+| 문서 | 설명 |
+|------|------|
+| [트러블슈팅 가이드](troubleshooting.md) | 일반 트러블슈팅 가이드 |
+| [모니터링 메트릭 가이드](monitoring-metrics.md) | 모니터링 지표 해석 |
+| [Scouter APM 가이드](scouter-guide.md) | APM 기반 원인 분석 |
+| [성능 튜닝 가이드](performance-tuning.md) | 성능 장애 튜닝 |
+| [인프라 설계](infrastructure-design.md) | 인프라 장애 설계 |

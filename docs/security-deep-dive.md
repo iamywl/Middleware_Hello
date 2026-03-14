@@ -1764,3 +1764,14 @@ echo "=== 점검 완료 ==="
 - [RFC 8446 (TLS 1.3)](https://datatracker.ietf.org/doc/html/rfc8446) - TLS 1.3 명세
 - [RFC 6749 (OAuth 2.0)](https://datatracker.ietf.org/doc/html/rfc6749) - OAuth 2.0 명세
 - [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html) - OIDC 명세
+
+---
+
+## 관련 문서
+
+| 문서 | 설명 |
+|------|------|
+| [아키텍처 설계](architecture.md) | 보안 아키텍처 개요 |
+| [사용자 가이드](user-guide.md) | Keycloak 기본 설정 |
+| [장애 대응 매뉴얼](incident-response.md) | 인증서 만료 장애 대응 |
+| [인프라 설계](infrastructure-design.md) | 네트워크 보안 설계 |

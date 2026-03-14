@@ -182,6 +182,8 @@ upstream was_backend {
 
 ## 2. 세션 관리 전략
 
+> **본 프로젝트의 선택**: 본 프로젝트는 JWT 기반 Stateless 인증을 채택하였다 (2.6절 참고). 아래 2.1~2.5절은 세션 관리 전략의 종류와 장단점을 비교 분석한 내용으로, 각 전략의 특성을 이해하기 위한 참고 자료이다.
+
 WAS를 이중화하면 세션 관리가 핵심 과제가 된다. 사용자가 로그인 후 다른 WAS로 요청이 전달되면 세션을 찾지 못해 다시 로그인해야 하는 문제가 발생한다.
 
 ### 2.1 Sticky Session (Session Affinity)
@@ -206,7 +208,7 @@ upstream was_backend {
 }
 ```
 
-**구현 방법 3 - Tomcat jvmRoute 기반 (본 프로젝트에서 설정됨)**:
+**구현 방법 3 - Tomcat jvmRoute 기반 (본 프로젝트에서 세션 어피니티 참조용으로 설정됨, 실제 인증은 JWT 기반)**:
 
 Tomcat의 `jvmRoute` 설정으로 JSESSIONID 뒤에 서버 식별자를 붙인다:
 ```
@@ -395,7 +397,7 @@ echo "[2/4] Tomcat1 재빌드 및 시작..."
 docker compose build tomcat1
 docker compose up -d tomcat1
 
-echo "[2/4] Tomcat1 헬스체크 대기..."
+echo "  [2/4] Tomcat1 헬스체크 대기..."
 until docker exec mw-tomcat1 curl -sf http://localhost:8080/actuator/health > /dev/null 2>&1; do
   echo "  Tomcat1 시작 대기 중..."
   sleep 3
@@ -1770,3 +1772,14 @@ Phase 3: 클라우드 네이티브 고도화
 ---
 
 > **참고**: 본 문서는 Docker Compose 기반의 개발/스테이징 환경을 전제로 작성되었다. 프로덕션 환경에서는 Kubernetes, 클라우드 매니지드 서비스(RDS, ELB 등), 전용 CI/CD 파이프라인 등 추가적인 인프라 고도화가 필요하다.
+
+---
+
+## 관련 문서
+
+| 문서 | 설명 |
+|------|------|
+| [아키텍처 설계](architecture.md) | 전체 아키텍처 개요 |
+| [성능 튜닝 가이드](performance-tuning.md) | 리소스 최적화 |
+| [장애 대응 매뉴얼](incident-response.md) | 장애 복구 매뉴얼 |
+| [보안 심층 분석](security-deep-dive.md) | 보안 인프라 설계 |

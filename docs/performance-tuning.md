@@ -615,12 +615,12 @@ SHOW STATUS LIKE 'Innodb_buffer_pool_reads';            -- 디스크 읽기
 # 컨테이너 내부에서 확인
 docker exec -it mw-mysql mysql -uroot -proot_password -e "
   SELECT
-    FORMAT(A.num * 100.0 / B.num, 2) AS buffer_pool_hit_rate
+    FORMAT((A.num - B.num) * 100.0 / A.num, 2) AS buffer_pool_hit_rate
   FROM
     (SELECT variable_value num FROM performance_schema.global_status
      WHERE variable_name = 'Innodb_buffer_pool_read_requests') A,
     (SELECT variable_value num FROM performance_schema.global_status
-     WHERE variable_name = 'Innodb_buffer_pool_read_requests') B;
+     WHERE variable_name = 'Innodb_buffer_pool_reads') B;
 "
 ```
 
@@ -942,7 +942,7 @@ services:
 | grafana | 256m | 128m | 0.5 |
 | node-exporter | 128m | - | 0.25 |
 | nginx-exporter | 128m | - | 0.25 |
-| **합계** | **~6.2g** | | **~7.5 cores** |
+| **합계** | **~7.0g** | | **~7.5 cores** |
 
 ---
 
@@ -1333,3 +1333,14 @@ docker system df                                  # 디스크 사용량
 ab -n 1000 -c 50 -k https://localhost/            # Apache Benchmark
 wrk -t4 -c100 -d30s --latency https://localhost/  # wrk 부하 테스트
 ```
+
+---
+
+## 관련 문서
+
+| 문서 | 설명 |
+|------|------|
+| [모니터링 메트릭 가이드](monitoring-metrics.md) | 성능 메트릭 수집 가이드 |
+| [Scouter APM 가이드](scouter-guide.md) | APM 기반 병목 분석 |
+| [인프라 설계](infrastructure-design.md) | 인프라 용량 설계 |
+| [장애 대응 매뉴얼](incident-response.md) | 성능 장애 대응 |
