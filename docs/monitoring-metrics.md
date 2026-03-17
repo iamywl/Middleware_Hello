@@ -637,8 +637,8 @@ groups:
           summary: "타겟 {{ $labels.instance }} 다운"
           description: >
             {{ $labels.job }} 잡의 {{ $labels.instance }} 타겟이
-            1분 이상 응답하지 않습니다.
-            즉시 확인이 필요합니다.
+            1분 이상 응답하지 않는다.
+            즉시 확인이 필요한다.
 
       # ----------------------------------------------------------
       # CPU 80% 이상 5분 지속
@@ -653,7 +653,7 @@ groups:
           summary: "CPU 사용률 {{ printf \"%.1f\" $value }}% ({{ $labels.instance }})"
           description: >
             {{ $labels.instance }}의 CPU 사용률이 5분 이상
-            80%를 초과하고 있습니다.
+            80%를 초과하고 있다.
             현재 값: {{ printf "%.1f" $value }}%
 
       # ----------------------------------------------------------
@@ -668,7 +668,7 @@ groups:
         annotations:
           summary: "CPU 사용률 위험 {{ printf \"%.1f\" $value }}% ({{ $labels.instance }})"
           description: >
-            CPU 사용률이 95%를 초과했습니다. 즉시 조치가 필요합니다.
+            CPU 사용률이 95%를 초과했다. 즉시 조치가 필요한다.
 
       # ----------------------------------------------------------
       # 메모리 90% 이상
@@ -682,8 +682,8 @@ groups:
         annotations:
           summary: "메모리 사용률 {{ printf \"%.1f\" $value }}% ({{ $labels.instance }})"
           description: >
-            가용 메모리가 10% 미만입니다. OOM Killer가
-            프로세스를 종료할 수 있습니다.
+            가용 메모리가 10% 미만이다. OOM Killer가
+            프로세스를 종료할 수 있다.
 
       # ----------------------------------------------------------
       # 디스크 85% 이상
@@ -698,8 +698,8 @@ groups:
         annotations:
           summary: "디스크 사용률 {{ printf \"%.1f\" $value }}% ({{ $labels.instance }}:{{ $labels.mountpoint }})"
           description: >
-            디스크 공간이 15% 미만 남았습니다.
-            로그 정리 또는 볼륨 확장을 검토하세요.
+            디스크 공간이 15% 미만 남았다.
+            로그 정리 또는 볼륨 확장을 검토한다.
 
       # ----------------------------------------------------------
       # 디스크 95% 이상 (Critical)
@@ -714,7 +714,7 @@ groups:
         annotations:
           summary: "디스크 거의 가득 참 {{ printf \"%.1f\" $value }}%"
           description: >
-            디스크 사용률 95% 초과. 서비스 장애로 이어질 수 있습니다.
+            디스크 사용률 95% 초과. 서비스 장애로 이어질 수 있다.
 
   # ============================================================
   # Nginx Alert
@@ -737,8 +737,8 @@ groups:
         annotations:
           summary: "5xx 에러율 {{ printf \"%.2f\" $value }}%"
           description: >
-            HTTP 5xx 에러율이 3분 이상 5%를 초과합니다.
-            Tomcat 로그와 애플리케이션 상태를 확인하세요.
+            HTTP 5xx 에러율이 3분 이상 5%를 초과한다.
+            Tomcat 로그와 애플리케이션 상태를 확인한다.
 
       # ----------------------------------------------------------
       # Nginx Active Connection 급증
@@ -751,8 +751,8 @@ groups:
         annotations:
           summary: "Nginx Active Connection {{ $value }}개"
           description: >
-            Nginx 활성 연결이 500을 초과했습니다.
-            DDoS 또는 upstream 지연을 의심하세요.
+            Nginx 활성 연결이 500을 초과했다.
+            DDoS 또는 upstream 지연을 의심한다.
 
   # ============================================================
   # JVM / Tomcat Alert
@@ -773,8 +773,8 @@ groups:
         annotations:
           summary: "JVM Heap {{ printf \"%.1f\" $value }}% ({{ $labels.instance }})"
           description: >
-            JVM Heap 사용률이 5분 이상 80%를 초과합니다.
-            메모리 누수 가능성을 점검하세요.
+            JVM Heap 사용률이 5분 이상 80%를 초과한다.
+            메모리 누수 가능성을 점검한다.
             현재 Heap: {{ $labels.instance }}
 
       # ----------------------------------------------------------
@@ -791,8 +791,8 @@ groups:
         annotations:
           summary: "JVM Heap 위험 {{ printf \"%.1f\" $value }}%"
           description: >
-            OutOfMemoryError 직전 상태입니다.
-            힙 덤프를 수집하고 즉시 대응하세요.
+            OutOfMemoryError 직전 상태이다.
+            힙 덤프를 수집하고 즉시 대응한다.
 
       # ----------------------------------------------------------
       # GC 시간이 전체의 10% 초과
@@ -806,8 +806,8 @@ groups:
         annotations:
           summary: "GC 오버헤드 {{ printf \"%.1f\" (mul $value 100) }}% ({{ $labels.instance }})"
           description: >
-            GC에 소요되는 시간이 전체의 10%를 초과합니다.
-            GC 로그를 분석하고 Heap 튜닝을 검토하세요.
+            GC에 소요되는 시간이 전체의 10%를 초과한다.
+            GC 로그를 분석하고 Heap 튜닝을 검토한다.
 
       # ----------------------------------------------------------
       # Tomcat Thread Pool 포화
@@ -823,8 +823,8 @@ groups:
         annotations:
           summary: "Tomcat 스레드 풀 {{ printf \"%.1f\" $value }}% 사용 중"
           description: >
-            Tomcat 스레드 풀이 80% 이상 사용 중입니다.
-            요청 큐잉이 발생할 수 있습니다.
+            Tomcat 스레드 풀이 80% 이상 사용 중이다.
+            요청 큐잉이 발생할 수 있다.
 
       # ----------------------------------------------------------
       # HTTP 응답시간 p95 > 2초
@@ -840,8 +840,8 @@ groups:
         annotations:
           summary: "HTTP p95 응답시간 {{ printf \"%.2f\" $value }}초"
           description: >
-            HTTP 요청의 p95 응답시간이 2초를 초과합니다.
-            슬로우 쿼리 또는 외부 API 지연을 점검하세요.
+            HTTP 요청의 p95 응답시간이 2초를 초과한다.
+            슬로우 쿼리 또는 외부 API 지연을 점검한다.
 ```
 
 ### 4.2 prometheus.yml에 rule_files 추가

@@ -2,15 +2,15 @@
 
 > 미들웨어(M/W) 기술엔지니어 직무 대비 실습 프로젝트
 >
-> `docker-compose up -d` 한 줄로 **WEB/WAS 이중화 + APM 모니터링 + SSO 인증 + SSL 보안** 전체 인프라를 구동할 수 있습니다.
+> `docker-compose up -d` 한 줄로 **WEB/WAS 이중화 + APM 모니터링 + SSO 인증 + SSL 보안** 전체 인프라를 구동할 수 있다.
 
 ---
 
 ## 프로젝트 소개
 
-실제 기업 운영 환경과 동일한 **WEB/WAS 미들웨어 아키텍처**를 Docker 기반으로 구축한 프로젝트입니다.
+실제 기업 운영 환경과 동일한 **WEB/WAS 미들웨어 아키텍처**를 Docker 기반으로 구축한 프로젝트이다.
 
-클라이언트 요청이 **Nginx(WEB)** → **Tomcat(WAS) 이중화** → **MySQL(DB)** 로 흐르는 3-Tier 구조를 구현하고, **Scouter APM**으로 WAS 성능을 실시간 모니터링하며, **Keycloak**으로 SSO 인증, **자체 CA 인증서**로 HTTPS 보안 통신까지 적용한 풀스택 미들웨어 환경입니다.
+클라이언트 요청이 **Nginx(WEB)** → **Tomcat(WAS) 이중화** → **MySQL(DB)** 로 흐르는 3-Tier 구조를 구현하고, **Scouter APM**으로 WAS 성능을 실시간 모니터링하며, **Keycloak**으로 SSO 인증, **자체 CA 인증서**로 HTTPS 보안 통신까지 적용한 풀스택 미들웨어 환경이다.
 
 ---
 
@@ -39,33 +39,33 @@
 
 | 기술 | 역할 | 설명 |
 |:----:|------|------|
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nginx/nginx-original.svg" alt="Nginx" width="80"> <br> **Nginx 1.24** | **리버스 프록시 + 로드밸런서** | 클라이언트의 HTTPS 요청을 받아 SSL 종료(Termination) 처리 후, 백엔드 Tomcat 2대에 **Round Robin** 방식으로 트래픽을 분산합니다. `/stub_status` 엔드포인트로 활성 연결 수, 요청 처리량 등의 메트릭을 Prometheus에 노출합니다. |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tomcat/tomcat-original.svg" alt="Tomcat" width="80"> <br> **Apache Tomcat 10** | **WAS (2대 이중화)** | Spring Boot 애플리케이션을 구동하는 서블릿 컨테이너입니다. 2대를 이중화하여 한 대가 장애 시에도 서비스가 중단되지 않는 **고가용성(HA)** 환경을 구현합니다. 각 인스턴스에 Scouter Java Agent를 부착하여 TPS, 응답시간, JVM 힙 메모리를 실시간 수집합니다. |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original-wordmark.svg" alt="MySQL" width="80"> <br> **MySQL 8.0** | **관계형 데이터베이스** | 애플리케이션 데이터를 저장하는 RDBMS입니다. Docker Volume으로 데이터 영속성을 보장하며, Health Check를 통해 DB가 준비된 후에만 WAS가 기동되도록 의존성을 관리합니다. |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nginx/nginx-original.svg" alt="Nginx" width="80"> <br> **Nginx 1.24** | **리버스 프록시 + 로드밸런서** | 클라이언트의 HTTPS 요청을 받아 SSL 종료(Termination) 처리 후, 백엔드 Tomcat 2대에 **Round Robin** 방식으로 트래픽을 분산한다. `/stub_status` 엔드포인트로 활성 연결 수, 요청 처리량 등의 메트릭을 Prometheus에 노출한다. |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tomcat/tomcat-original.svg" alt="Tomcat" width="80"> <br> **Apache Tomcat 10** | **WAS (2대 이중화)** | Spring Boot 애플리케이션을 구동하는 서블릿 컨테이너이다. 2대를 이중화하여 한 대가 장애 시에도 서비스가 중단되지 않는 **고가용성(HA)** 환경을 구현한다. 각 인스턴스에 Scouter Java Agent를 부착하여 TPS, 응답시간, JVM 힙 메모리를 실시간 수집한다. |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original-wordmark.svg" alt="MySQL" width="80"> <br> **MySQL 8.0** | **관계형 데이터베이스** | 애플리케이션 데이터를 저장하는 RDBMS이다. Docker Volume으로 데이터 영속성을 보장하며, Health Check를 통해 DB가 준비된 후에만 WAS가 기동되도록 의존성을 관리한다. |
 
 ### APM / 모니터링
 
 | 기술 | 역할 | 설명 |
 |:----:|------|------|
-| <img src="https://avatars.githubusercontent.com/u/13431280?s=200&v=4" alt="Scouter" width="80"> <br> **Scouter** | **APM (Application Performance Monitoring)** | **Jennifer의 오픈소스 대안**입니다. Java Agent(`-javaagent`) 방식으로 Tomcat에 부착되어 **TPS, 응답시간, Active Service, JVM 힙/GC** 등을 실시간으로 수집합니다. Scouter Server(6100 포트)가 Agent 데이터를 수집·저장하고, Scouter Client에서 XLog 차트로 시각화합니다. |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prometheus/prometheus-original.svg" alt="Prometheus" width="80"> <br> **Prometheus** | **메트릭 수집 및 시계열 DB** | Pull 방식으로 각 Exporter(Node Exporter, Nginx Exporter)에서 **CPU, 메모리, 디스크, 네트워크, HTTP 요청 수** 등의 메트릭을 15초 간격으로 스크래핑합니다. 15일간 데이터를 보관하며 PromQL로 조회할 수 있습니다. |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/grafana/grafana-original.svg" alt="Grafana" width="80"> <br> **Grafana** | **모니터링 대시보드** | Prometheus를 데이터소스로 연결하여 **서버 리소스, Nginx 트래픽, WAS 상태**를 시각화하는 대시보드를 제공합니다. 사전 구성된 대시보드(JSON)가 프로비저닝되어 구동 즉시 모니터링이 가능합니다. |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prometheus/prometheus-original.svg" alt="Node Exporter" width="80"> <br> **Node Exporter** | **서버 리소스 메트릭 수집** | 호스트 시스템의 CPU 사용률, 메모리, 디스크 I/O, 네트워크 트래픽 등 OS 레벨 메트릭을 Prometheus 형식으로 노출합니다. |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nginx/nginx-original.svg" alt="Nginx Exporter" width="80"> <br> **Nginx Exporter** | **Nginx 메트릭 수집** | Nginx의 `stub_status` 모듈에서 활성 연결 수, 요청 처리량, 응답 코드별 카운트를 가져와 Prometheus에 노출합니다. |
+| <img src="https://avatars.githubusercontent.com/u/13431280?s=200&v=4" alt="Scouter" width="80"> <br> **Scouter** | **APM (Application Performance Monitoring)** | **Jennifer의 오픈소스 대안**이다. Java Agent(`-javaagent`) 방식으로 Tomcat에 부착되어 **TPS, 응답시간, Active Service, JVM 힙/GC** 등을 실시간으로 수집한다. Scouter Server(6100 포트)가 Agent 데이터를 수집·저장하고, Scouter Client에서 XLog 차트로 시각화한다. |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prometheus/prometheus-original.svg" alt="Prometheus" width="80"> <br> **Prometheus** | **메트릭 수집 및 시계열 DB** | Pull 방식으로 각 Exporter(Node Exporter, Nginx Exporter)에서 **CPU, 메모리, 디스크, 네트워크, HTTP 요청 수** 등의 메트릭을 15초 간격으로 스크래핑한다. 15일간 데이터를 보관하며 PromQL로 조회할 수 있다. |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/grafana/grafana-original.svg" alt="Grafana" width="80"> <br> **Grafana** | **모니터링 대시보드** | Prometheus를 데이터소스로 연결하여 **서버 리소스, Nginx 트래픽, WAS 상태**를 시각화하는 대시보드를 제공한다. 사전 구성된 대시보드(JSON)가 프로비저닝되어 구동 즉시 모니터링이 가능한다. |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prometheus/prometheus-original.svg" alt="Node Exporter" width="80"> <br> **Node Exporter** | **서버 리소스 메트릭 수집** | 호스트 시스템의 CPU 사용률, 메모리, 디스크 I/O, 네트워크 트래픽 등 OS 레벨 메트릭을 Prometheus 형식으로 노출한다. |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nginx/nginx-original.svg" alt="Nginx Exporter" width="80"> <br> **Nginx Exporter** | **Nginx 메트릭 수집** | Nginx의 `stub_status` 모듈에서 활성 연결 수, 요청 처리량, 응답 코드별 카운트를 가져와 Prometheus에 노출한다. |
 
 ### 인증 / 보안
 
 | 기술 | 역할 | 설명 |
 |:----:|------|------|
-| <img src="https://www.keycloak.org/resources/images/logo.svg" alt="Keycloak" width="80"> <br> **Keycloak 24.0** | **SSO / 통합 인증 서버** | **OpenID Connect(OIDC)** 프로토콜 기반의 싱글 사인온(SSO) 서버입니다. `middleware-realm`을 사전 구성하여 사용자 인증·인가를 중앙에서 관리합니다. Spring Security와 연동하여 `/secured/**` 경로에 접근 시 Keycloak 로그인 페이지로 리다이렉트됩니다. |
-| <img src="https://raw.githubusercontent.com/openssl/web/master/img/openssl.svg" alt="OpenSSL" width="80"> <br> **OpenSSL (자체 CA)** | **SSL/TLS 인증서 발급** | 자체 CA(Certificate Authority)를 구축하여 서버 인증서를 발급합니다. Nginx에서 HTTPS(443)를 제공하며, 인증서 체인(`server-chain.crt`)으로 클라이언트-서버 간 암호화 통신을 보장합니다. |
+| <img src="https://www.keycloak.org/resources/images/logo.svg" alt="Keycloak" width="80"> <br> **Keycloak 24.0** | **SSO / 통합 인증 서버** | **OpenID Connect(OIDC)** 프로토콜 기반의 싱글 사인온(SSO) 서버이다. `middleware-realm`을 사전 구성하여 사용자 인증·인가를 중앙에서 관리한다. Spring Security와 연동하여 `/secured/**` 경로에 접근 시 Keycloak 로그인 페이지로 리다이렉트된다. |
+| <img src="https://raw.githubusercontent.com/openssl/web/master/img/openssl.svg" alt="OpenSSL" width="80"> <br> **OpenSSL (자체 CA)** | **SSL/TLS 인증서 발급** | 자체 CA(Certificate Authority)를 구축하여 서버 인증서를 발급한다. Nginx에서 HTTPS(443)를 제공하며, 인증서 체인(`server-chain.crt`)으로 클라이언트-서버 간 암호화 통신을 보장한다. |
 
 ### 애플리케이션 / 인프라
 
 | 기술 | 역할 | 설명 |
 |:----:|------|------|
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg" alt="Spring Boot" width="80"> <br> **Spring Boot 3.x** | **백엔드 애플리케이션** | Tomcat 위에서 구동되는 REST API 애플리케이션입니다. Health Check 엔드포인트(`/health`, `/api/health`), Actuator 메트릭, Keycloak 연동 보안 컨트롤러를 포함합니다. |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" alt="Docker" width="80"> <br> **Docker Compose** | **컨테이너 오케스트레이션** | 10개 서비스(Nginx, Tomcat×2, MySQL, Keycloak, Scouter, Prometheus, Grafana, Node Exporter, Nginx Exporter)를 **단일 YAML 파일**로 정의하여 `docker-compose up -d` 한 줄로 전체 환경을 구동합니다. |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg" alt="Spring Boot" width="80"> <br> **Spring Boot 3.x** | **백엔드 애플리케이션** | Tomcat 위에서 구동되는 REST API 애플리케이션이다. Health Check 엔드포인트(`/health`, `/api/health`), Actuator 메트릭, Keycloak 연동 보안 컨트롤러를 포함한다. |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" alt="Docker" width="80"> <br> **Docker Compose** | **컨테이너 오케스트레이션** | 10개 서비스(Nginx, Tomcat×2, MySQL, Keycloak, Scouter, Prometheus, Grafana, Node Exporter, Nginx Exporter)를 **단일 YAML 파일**로 정의하여 `docker-compose up -d` 한 줄로 전체 환경을 구동한다. |
 
 ---
 
@@ -152,7 +152,7 @@ middle_ware/
 
 ## APM: Scouter vs Jennifer
 
-본 프로젝트에서는 APM으로 **Scouter**를 사용합니다. Jennifer는 상용(유료) 제품이므로 사이드 프로젝트에서 사용할 수 없어, 같은 계열의 오픈소스인 Scouter로 대체하였습니다.
+본 프로젝트에서는 APM으로 **Scouter**를 사용한다. Jennifer는 상용(유료) 제품이므로 사이드 프로젝트에서 사용할 수 없어, 같은 계열의 오픈소스인 Scouter로 대체하였다.
 
 | 항목 | Jennifer (상용) | Scouter (본 프로젝트) |
 |------|-----------------|----------------------|
@@ -163,8 +163,8 @@ middle_ware/
 | 실시간 대시보드 | O | O |
 | 힙 덤프/쓰레드 분석 | O | O |
 
-> Scouter는 Jennifer와 동일한 Java Agent 기반 APM으로, TPS/응답시간/JVM 힙/GC 모니터링 등 핵심 기능이 같습니다.
-> 채용공고의 "Jennifer 기반 시스템 기술지원" 역량을 이 프로젝트 경험으로 어필할 수 있습니다.
+> Scouter는 Jennifer와 동일한 Java Agent 기반 APM으로, TPS/응답시간/JVM 힙/GC 모니터링 등 핵심 기능이 같다.
+> 채용공고의 "Jennifer 기반 시스템 기술지원" 역량을 이 프로젝트 경험으로 어필할 수 있다.
 
 ---
 
@@ -212,4 +212,4 @@ middle_ware/
 [6주차] 인프라 설계 (Blue-Green 배포, 용량 계획 산정 실습)
 ```
 
-> 각 문서에는 **실제 명령어와 설정 파일 예시**가 포함되어 있어, 읽기만 하지 말고 **직접 터미널에서 실행하면서 학습**하는 것을 권장합니다.
+> 각 문서에는 **실제 명령어와 설정 파일 예시**가 포함되어 있어, 읽기만 하지 말고 **직접 터미널에서 실행하면서 학습**하는 것을 권장한다.

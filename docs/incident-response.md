@@ -834,7 +834,7 @@ EXPIRY_EPOCH=$(date -d "$EXPIRY" +%s)
 NOW_EPOCH=$(date +%s)
 DAYS_LEFT=$(( (EXPIRY_EPOCH - NOW_EPOCH) / 86400 ))
 if [ $DAYS_LEFT -lt $DAYS_THRESHOLD ]; then
-  echo "WARNING: SSL 인증서가 ${DAYS_LEFT}일 후 만료됩니다!" | \
+  echo "WARNING: SSL 인증서가 ${DAYS_LEFT}일 후 만료된다!" | \
     # Slack webhook 또는 이메일로 알림 발송
     curl -X POST -H 'Content-type: application/json' \
       --data "{\"text\":\"SSL 인증서 만료 경고: ${DAYS_LEFT}일 남음\"}" \

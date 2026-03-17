@@ -1,6 +1,6 @@
 # 사용자 가이드 - 처음부터 따라하기
 
-> 이 프로젝트를 처음 접하는 사람도 각 서비스가 **제대로 동작하는지 직접 확인**할 수 있도록 작성한 가이드입니다.
+> 이 프로젝트를 처음 접하는 사람도 각 서비스가 **제대로 동작하는지 직접 확인**할 수 있도록 작성한 가이드이다.
 
 ---
 
@@ -22,7 +22,7 @@
 
 ## 1. 사전 준비
 
-아래 도구가 설치되어 있어야 합니다.
+아래 도구가 설치되어 있어야 한다.
 
 ```bash
 # Docker 설치 확인
@@ -49,14 +49,14 @@ cd Middleware_Hello
 docker-compose up -d
 ```
 
-구동이 완료되면 10개의 컨테이너가 실행됩니다.
+구동이 완료되면 10개의 컨테이너가 실행된다.
 
 ```bash
 # 상태 확인 - 모든 컨테이너가 "Up" 상태인지 확인
 docker-compose ps
 ```
 
-**확인 포인트**: 아래 컨테이너가 모두 `Up` 또는 `Up (healthy)` 상태여야 합니다.
+**확인 포인트**: 아래 컨테이너가 모두 `Up` 또는 `Up (healthy)` 상태여야 한다.
 
 | 컨테이너 | 역할 |
 |-----------|------|
@@ -71,23 +71,23 @@ docker-compose ps
 | mw-node-exporter | 서버 리소스 수집 |
 | mw-nginx-exporter | Nginx 메트릭 수집 |
 
-> 컨테이너가 뜨는 데 1~2분 걸릴 수 있습니다. 특히 MySQL이 `healthy` 상태가 되어야 Tomcat이 기동됩니다.
+> 컨테이너가 뜨는 데 1~2분 걸릴 수 있다. 특히 MySQL이 `healthy` 상태가 되어야 Tomcat이 기동된다.
 
 ---
 
 ## 3. Nginx - 로드밸런싱 확인하기
 
-**목적**: Nginx가 요청을 Tomcat #1, #2에 번갈아 보내는지 확인합니다.
+**목적**: Nginx가 요청을 Tomcat #1, #2에 번갈아 보내는지 확인한다.
 
 ### 터미널에서 확인
 
 ```bash
-# 같은 명령을 두 번 실행합니다 (-k 옵션은 자체서명 인증서 허용)
+# 같은 명령을 두 번 실행한다 (-k 옵션은 자체서명 인증서 허용)
 curl -k https://localhost/health
 curl -k https://localhost/health
 ```
 
-**확인 포인트**: 응답의 `"host"` 값이 번갈아 바뀌면 로드밸런싱이 동작하는 것입니다.
+**확인 포인트**: 응답의 `"host"` 값이 번갈아 바뀌면 로드밸런싱이 동작하는 것이다.
 
 ```json
 // 첫 번째 요청 → Tomcat #1
@@ -97,7 +97,7 @@ curl -k https://localhost/health
 {"status":"UP","host":"fed4321cba"}
 ```
 
-> `host` 값은 컨테이너 ID이므로 두 값이 **서로 다르면** 정상입니다.
+> `host` 값은 컨테이너 ID이므로 두 값이 **서로 다르면** 정상이다.
 
 ### 브라우저에서 확인
 
@@ -110,7 +110,7 @@ curl -k https://localhost/health
 
 ## 4. Spring Boot - API 동작 확인하기
 
-**목적**: WAS 위에서 Spring Boot 애플리케이션이 정상 동작하는지 확인합니다.
+**목적**: WAS 위에서 Spring Boot 애플리케이션이 정상 동작하는지 확인한다.
 
 ### 사용 가능한 API 목록
 
@@ -137,7 +137,7 @@ curl -k https://localhost/info
 
 ## 5. Prometheus - 메트릭 수집 확인하기
 
-**목적**: Prometheus가 각 서비스에서 메트릭을 정상적으로 수집하고 있는지 확인합니다.
+**목적**: Prometheus가 각 서비스에서 메트릭을 정상적으로 수집하고 있는지 확인한다.
 
 ### Step 1: Prometheus 웹 UI 접속
 
@@ -156,7 +156,7 @@ curl -k https://localhost/info
 | `tomcat1` | WAS #1 JVM/HTTP 메트릭 | State가 `UP` |
 | `tomcat2` | WAS #2 JVM/HTTP 메트릭 | State가 `UP` |
 
-> 하나라도 `DOWN` (빨간색)이면 해당 서비스가 아직 기동 중이거나 문제가 있는 것입니다.
+> 하나라도 `DOWN` (빨간색)이면 해당 서비스가 아직 기동 중이거나 문제가 있는 것이다.
 
 ### Step 3: 직접 쿼리 실행해보기
 
@@ -167,7 +167,7 @@ curl -k https://localhost/info
 100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)
 ```
 
-2. **Graph** 탭을 클릭하면 시간에 따른 CPU 사용률 그래프가 표시됩니다
+2. **Graph** 탭을 클릭하면 시간에 따른 CPU 사용률 그래프가 표시된다
 
 **다른 쿼리 예시**:
 
@@ -186,7 +186,7 @@ jvm_memory_used_bytes{job="tomcat1", area="heap"}
 
 ## 6. Grafana - 대시보드 확인하기
 
-**목적**: Grafana에서 사전 구성된 대시보드로 시스템 상태를 시각적으로 모니터링합니다.
+**목적**: Grafana에서 사전 구성된 대시보드로 시스템 상태를 시각적으로 모니터링한다.
 
 ### Step 1: Grafana 로그인
 
@@ -203,7 +203,7 @@ jvm_memory_used_bytes{job="tomcat1", area="heap"}
 
 ### Step 3: 대시보드 패널 확인
 
-아래 8개 패널이 표시됩니다:
+아래 8개 패널이 표시된다:
 
 | 패널 이름 | 표시 내용 | 정상 확인 방법 |
 |-----------|-----------|---------------|
@@ -216,24 +216,24 @@ jvm_memory_used_bytes{job="tomcat1", area="heap"}
 | **JVM Heap Memory - Tomcat1** | Tomcat #1 힙 메모리 | Used/Max 선이 보이면 정상 |
 | **JVM Heap Memory - Tomcat2** | Tomcat #2 힙 메모리 | Used/Max 선이 보이면 정상 |
 
-> "No data" 가 표시되면 우측 상단의 시간 범위를 **Last 5 minutes** 로 변경해보세요.
+> "No data" 가 표시되면 우측 상단의 시간 범위를 **Last 5 minutes** 로 변경해본다.
 
 ### Step 4: 실시간 변화 관찰하기
 
-터미널에서 부하를 발생시키면 대시보드에서 실시간으로 변화를 볼 수 있습니다:
+터미널에서 부하를 발생시키면 대시보드에서 실시간으로 변화를 볼 수 있다:
 
 ```bash
 # 반복 요청으로 트래픽 발생 (100회)
 for i in $(seq 1 100); do curl -sk https://localhost/health > /dev/null; done
 ```
 
-실행 후 Grafana에서 **Nginx Requests/sec** 패널의 그래프가 올라가는 것을 확인하세요.
+실행 후 Grafana에서 **Nginx Requests/sec** 패널의 그래프가 올라가는 것을 확인한다.
 
 ---
 
 ## 7. Keycloak - SSO 로그인 확인하기
 
-**목적**: Keycloak SSO 서버가 동작하고, 보호된 페이지에 접근 시 로그인이 요구되는지 확인합니다.
+**목적**: Keycloak SSO 서버가 동작하고, 보호된 페이지에 접근 시 로그인이 요구되는지 확인한다.
 
 ### Step 1: Keycloak 관리 콘솔 접속
 
@@ -258,13 +258,13 @@ for i in $(seq 1 100); do curl -sk https://localhost/health > /dev/null; done
 
 1. 좌측 메뉴에서 **Clients** 클릭
 2. **middleware-app** 클라이언트가 등록되어 있는지 확인
-3. 클릭하면 아래 설정을 볼 수 있습니다:
+3. 클릭하면 아래 설정을 볼 수 있다:
    - Protocol: `openid-connect`
    - Redirect URIs: `https://localhost/*`
 
 ### Step 4: Split URI 패턴 이해하기
 
-Docker Compose 환경에서 OIDC를 사용할 때, **브라우저용 URI**와 **서버 간 통신 URI**를 분리해야 합니다.
+Docker Compose 환경에서 OIDC를 사용할 때, **브라우저용 URI**와 **서버 간 통신 URI**를 분리해야 한다.
 
 `application.properties`의 핵심 설정:
 
@@ -304,7 +304,7 @@ spring.security.oauth2.client.provider.keycloak.user-info-uri=http://keycloak:80
 curl -k https://localhost/secured/profile
 ```
 
-**확인 포인트**: 로그인하지 않았으므로 **302 리다이렉트** 또는 **Keycloak 로그인 페이지 HTML**이 응답됩니다. 이것은 SSO가 정상 동작하는 것입니다.
+**확인 포인트**: 로그인하지 않았으므로 **302 리다이렉트** 또는 **Keycloak 로그인 페이지 HTML**이 응답된다. 이것은 SSO가 정상 동작하는 것이다.
 
 브라우저에서 직접 테스트:
 1. `https://localhost/secured/profile` 접속
@@ -318,13 +318,13 @@ curl -k https://localhost/secured/profile
   "email": "test@middleware.local",
   "name": "Test User",
   "host": "abc1234def",
-  "message": "SSO 인증 성공! Keycloak OIDC로 로그인되었습니다."
+  "message": "SSO 인증 성공! Keycloak OIDC로 로그인되었다."
 }
 ```
 
 ### Step 6: 토큰 직접 발급해보기 (선택)
 
-OIDC Token Endpoint로 직접 토큰을 발급받을 수도 있습니다:
+OIDC Token Endpoint로 직접 토큰을 발급받을 수도 있다:
 
 ```bash
 # Access Token 발급
@@ -336,13 +336,13 @@ curl -X POST http://localhost:8080/realms/middleware/protocol/openid-connect/tok
   -d "password=test123"
 ```
 
-**확인 포인트**: `access_token`, `refresh_token`, `token_type: "Bearer"` 가 포함된 JSON이 응답되면 정상입니다.
+**확인 포인트**: `access_token`, `refresh_token`, `token_type: "Bearer"` 가 포함된 JSON이 응답되면 정상이다.
 
 ---
 
 ## 8. Scouter - APM 모니터링 확인하기
 
-**목적**: Scouter가 Tomcat의 성능 데이터(TPS, 응답시간, JVM)를 수집하고 있는지 확인합니다.
+**목적**: Scouter가 Tomcat의 성능 데이터(TPS, 응답시간, JVM)를 수집하고 있는지 확인한다.
 
 ### Step 1: Scouter Server 동작 확인
 
@@ -351,7 +351,7 @@ curl -X POST http://localhost:8080/realms/middleware/protocol/openid-connect/tok
 docker logs mw-scouter
 ```
 
-**확인 포인트**: `Scouter server started` 또는 포트 `6100`에서 수신 대기 중이라는 메시지가 있으면 정상입니다.
+**확인 포인트**: `Scouter server started` 또는 포트 `6100`에서 수신 대기 중이라는 메시지가 있으면 정상이다.
 
 ### Step 2: Scouter Agent 연결 확인
 
@@ -361,13 +361,13 @@ docker logs mw-tomcat1 2>&1 | grep -i scouter
 docker logs mw-tomcat2 2>&1 | grep -i scouter
 ```
 
-**확인 포인트**: `Scouter Agent` 관련 로그가 출력되면 Agent가 정상적으로 부착된 것입니다.
+**확인 포인트**: `Scouter Agent` 관련 로그가 출력되면 Agent가 정상적으로 부착된 것이다.
 
 ### Step 3: Scouter Client 설치 및 접속
 
-Scouter의 전체 기능(XLog, TPS, Heap 등)을 시각적으로 보려면 별도의 **Scouter Client(GUI)**를 설치해야 합니다.
+Scouter의 전체 기능(XLog, TPS, Heap 등)을 시각적으로 보려면 별도의 **Scouter Client(GUI)**를 설치해야 한다.
 
-> Scouter Client는 Homebrew에 등록되어 있지 않으므로 GitHub Releases에서 직접 다운로드합니다.
+> Scouter Client는 Homebrew에 등록되어 있지 않으므로 GitHub Releases에서 직접 다운로드한다.
 
 #### macOS (Apple Silicon / M1~M4)
 
@@ -390,7 +390,7 @@ open ~/Applications/Scouter/scouter.client.app
 #### macOS (Intel)
 
 ```bash
-# Intel Mac은 x86_64 버전을 다운로드합니다
+# Intel Mac은 x86_64 버전을 다운로드한다
 curl -L -o /tmp/scouter-client-mac.tar.gz \
   https://github.com/scouter-project/scouter/releases/download/v2.21.3/scouter.client.product-macosx.cocoa.x86_64.tar.gz
 
@@ -417,7 +417,7 @@ tar -xzf /tmp/scouter-client-linux.tar.gz -C ~/
 
 ### Step 4: Scouter Client 접속 설정
 
-Scouter Client가 실행되면 접속 정보를 입력합니다:
+Scouter Client가 실행되면 접속 정보를 입력한다:
 
 | 항목 | 값 |
 |------|------|
@@ -428,7 +428,7 @@ Scouter Client가 실행되면 접속 정보를 입력합니다:
 
 ### Step 5: Scouter Client에서 확인 가능한 항목
 
-접속 성공 후 아래 모니터링 항목을 확인할 수 있습니다:
+접속 성공 후 아래 모니터링 항목을 확인할 수 있다:
 
 | 모니터링 항목 | 설명 | 확인 방법 |
 |--------------|------|-----------|
@@ -438,7 +438,7 @@ Scouter Client가 실행되면 접속 정보를 입력합니다:
 | **Heap Memory** | JVM 힙 메모리 사용량 및 GC 발생 | Object 우클릭 → Heap Memory 열기 |
 | **Thread List** | 현재 활성 쓰레드 목록 | Object 우클릭 → Thread List |
 
-> XLog 차트에서 점을 클릭하면 해당 요청의 **SQL, API 호출 경로, 응답시간 상세**를 확인할 수 있습니다. 이것이 Jennifer와 동일한 APM 분석 방식입니다.
+> XLog 차트에서 점을 클릭하면 해당 요청의 **SQL, API 호출 경로, 응답시간 상세**를 확인할 수 있다. 이것이 Jennifer와 동일한 APM 분석 방식이다.
 
 ### Step 6: 부하 발생 후 모니터링 변화 관찰
 
@@ -447,13 +447,13 @@ Scouter Client가 실행되면 접속 정보를 입력합니다:
 for i in $(seq 1 200); do curl -sk https://localhost/ > /dev/null; done
 ```
 
-Scouter Client의 XLog 차트에 점이 찍히고, TPS 그래프가 올라가는 것을 확인하세요.
+Scouter Client의 XLog 차트에 점이 찍히고, TPS 그래프가 올라가는 것을 확인한다.
 
 ---
 
 ## 9. SSL/HTTPS - 인증서 확인하기
 
-**목적**: 자체 CA로 발급한 SSL 인증서가 Nginx에 적용되어 HTTPS 통신이 되는지 확인합니다.
+**목적**: 자체 CA로 발급한 SSL 인증서가 Nginx에 적용되어 HTTPS 통신이 되는지 확인한다.
 
 ### 터미널에서 확인
 
@@ -484,13 +484,13 @@ notAfter= ...                              ← 만료일
 curl -I http://localhost
 ```
 
-**확인 포인트**: 응답에 `301 Moved Permanently`와 `Location: https://localhost/`가 있으면 정상입니다.
+**확인 포인트**: 응답에 `301 Moved Permanently`와 `Location: https://localhost/`가 있으면 정상이다.
 
 ---
 
 ## 10. 장애 시뮬레이션 - 고가용성 확인하기
 
-**목적**: WAS 한 대가 죽어도 서비스가 계속 동작하는지 확인합니다.
+**목적**: WAS 한 대가 죽어도 서비스가 계속 동작하는지 확인한다.
 
 ### Step 1: 정상 상태에서 요청 확인
 
@@ -514,7 +514,7 @@ curl -k https://localhost/health
 curl -k https://localhost/health
 ```
 
-**확인 포인트**: 모든 요청이 **Tomcat #1**에서만 응답됩니다. `host` 값이 전부 같으면 정상 — Nginx가 살아있는 서버로만 트래픽을 보내는 것입니다.
+**확인 포인트**: 모든 요청이 **Tomcat #1**에서만 응답된다. `host` 값이 전부 같으면 정상 — Nginx가 살아있는 서버로만 트래픽을 보내는 것이다.
 
 ### Step 4: Tomcat #2 복구
 
@@ -526,7 +526,7 @@ curl -k https://localhost/health
 curl -k https://localhost/health
 ```
 
-**확인 포인트**: 다시 `host` 값이 번갈아 나오면 이중화가 복구된 것입니다.
+**확인 포인트**: 다시 `host` 값이 번갈아 나오면 이중화가 복구된 것이다.
 
 ---
 
