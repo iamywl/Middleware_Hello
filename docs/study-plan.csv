@@ -1,0 +1,95 @@
+주차,Day,학습시간(h),테마,시간배분,학습내용,참고문서,난이도,학습목표,완료
+1주차,Day 1,2,프로젝트 오리엔테이션,0:00~0:45,README.md 정독 — 3-Tier 구조/기술 스택/프로젝트 구조 파악,README.md (215줄),⭐,프로젝트 전체 구조를 머릿속에 그릴 수 있어야 한다,☐
+1주차,Day 1,2,프로젝트 오리엔테이션,0:45~1:30,docker-compose up으로 전체 환경을 직접 띄워본다,실습,⭐,프로젝트 전체 구조를 머릿속에 그릴 수 있어야 한다,☐
+1주차,Day 1,2,프로젝트 오리엔테이션,1:30~2:00,각 서비스 접속을 확인한다 (Nginx/Tomcat/Grafana/Keycloak/Scouter),실습,⭐,프로젝트 전체 구조를 머릿속에 그릴 수 있어야 한다,☐
+1주차,Day 2,2,사용자 가이드 실습,0:00~0:30,user-guide §1~3: 사전 준비/환경 구동/Nginx 로드밸런싱 확인,docs/user-guide.md,⭐,모든 컴포넌트를 직접 조작하고 정상 동작을 확인하는 것이다,☐
+1주차,Day 2,2,사용자 가이드 실습,0:30~1:00,user-guide §4~6: Spring Boot API/Prometheus/Grafana 대시보드,docs/user-guide.md,⭐,모든 컴포넌트를 직접 조작하고 정상 동작을 확인하는 것이다,☐
+1주차,Day 2,2,사용자 가이드 실습,1:00~1:30,user-guide §7~9: Keycloak SSO/Scouter APM/SSL 인증서,docs/user-guide.md,⭐,모든 컴포넌트를 직접 조작하고 정상 동작을 확인하는 것이다,☐
+1주차,Day 2,2,사용자 가이드 실습,1:30~2:00,user-guide §10~11: 장애 시뮬레이션/환경 종료,docs/user-guide.md,⭐,모든 컴포넌트를 직접 조작하고 정상 동작을 확인하는 것이다,☐
+1주차,Day 3,2,아키텍처 (전반),0:00~0:40,설계 철학/전체 아키텍처 다이어그램/컨테이너 오케스트레이션,docs/architecture.md §1~3,⭐⭐,요청이 Client→Nginx→Tomcat→MySQL로 흐르는 과정을 설명할 수 있어야 한다,☐
+1주차,Day 3,2,아키텍처 (전반),0:40~1:20,네트워크 아키텍처/WEB 계층(Nginx)/WAS 계층(Tomcat),docs/architecture.md §4~6,⭐⭐,요청이 Client→Nginx→Tomcat→MySQL로 흐르는 과정을 설명할 수 있어야 한다,☐
+1주차,Day 3,2,아키텍처 (전반),1:20~2:00,DB 계층(MySQL)/인증·인가 계층(Keycloak),docs/architecture.md §7~8,⭐⭐,요청이 Client→Nginx→Tomcat→MySQL로 흐르는 과정을 설명할 수 있어야 한다,☐
+1주차,Day 4,2,아키텍처 (후반),0:00~0:40,요청 처리 흐름/SSL·TLS·PKI 구조,docs/architecture.md §9~10,⭐⭐,SSL 핸드셰이크/로드밸런싱/모니터링 파이프라인을 도식으로 그릴 수 있어야 한다,☐
+1주차,Day 4,2,아키텍처 (후반),0:40~1:20,로드밸런싱 메커니즘/모니터링 시스템 아키텍처,docs/architecture.md §11~12,⭐⭐,SSL 핸드셰이크/로드밸런싱/모니터링 파이프라인을 도식으로 그릴 수 있어야 한다,☐
+1주차,Day 4,2,아키텍처 (후반),1:20~2:00,빌드/배포 파이프라인/성능 테스트/데이터 영속성/장애 감지,docs/architecture.md §13~16,⭐⭐,SSL 핸드셰이크/로드밸런싱/모니터링 파이프라인을 도식으로 그릴 수 있어야 한다,☐
+1주차,Day 5,2,1주차 복습 + 트러블슈팅 입문,0:00~0:45,1주차 핵심 개념 노트 정리 (아키텍처 다이어그램을 직접 그려본다),복습,⭐⭐,기본적인 트러블슈팅 사고방식을 갖추는 것이다,☐
+1주차,Day 5,2,1주차 복습 + 트러블슈팅 입문,0:45~1:30,troubleshooting.md — 7가지 장애 시나리오를 빠르게 훑는다,docs/troubleshooting.md (429줄),⭐⭐,기본적인 트러블슈팅 사고방식을 갖추는 것이다,☐
+1주차,Day 5,2,1주차 복습 + 트러블슈팅 입문,1:30~2:00,장애 1~2개를 직접 재현해본다 (WAS 인스턴스 장애/OOM),실습,⭐⭐,기본적인 트러블슈팅 사고방식을 갖추는 것이다,☐
+2주차,Day 6,2,Scouter 개요 + 내부 동작,0:00~0:50,Part 1: APM이란/Scouter 아키텍처/설치/클라이언트,docs/scouter-guide.md Part 1,⭐⭐,Scouter가 Java 앱을 계측하는 원리를 이해하는 것이다,☐
+2주차,Day 6,2,Scouter 개요 + 내부 동작,0:50~2:00,Part 2 전반: 바이트코드 계측/Agent↔Server 통신/데이터 수집 파이프라인,docs/scouter-guide.md Part 2 §1~3,⭐⭐,Scouter가 Java 앱을 계측하는 원리를 이해하는 것이다,☐
+2주차,Day 7,2,Scouter 내부 메커니즘 심화,0:00~1:00,Part 2 후반: XLog 구조/Counter 메커니즘/서버 저장소/객체 생명주기,docs/scouter-guide.md Part 2 §4~7,⭐⭐⭐,XLog 하나가 생성되어 저장되기까지의 전체 흐름을 추적할 수 있어야 한다,☐
+2주차,Day 7,2,Scouter 내부 메커니즘 심화,1:00~2:00,Scouter Client에서 XLog/Counter를 직접 확인하며 내부 동작을 대조한다,실습,⭐⭐⭐,XLog 하나가 생성되어 저장되기까지의 전체 흐름을 추적할 수 있어야 한다,☐
+2주차,Day 8,2,Scouter 모니터링 뷰 전체 파악,0:00~1:00,Part 3 전반: XLog 뷰/TPS/Active Service/JVM Heap,docs/scouter-guide.md Part 3 §1~4,⭐⭐,각 모니터링 뷰가 보여주는 정보와 활용 시점을 구분할 수 있어야 한다,☐
+2주차,Day 8,2,Scouter 모니터링 뷰 전체 파악,1:00~2:00,Part 3 후반: GC/스레드 분석/SQL 프로파일링/서비스 EQ/뷰 카탈로그,docs/scouter-guide.md Part 3 §5~9,⭐⭐,각 모니터링 뷰가 보여주는 정보와 활용 시점을 구분할 수 있어야 한다,☐
+2주차,Day 9,2,Scouter 실전 활용 + 핸즈온,0:00~0:40,Part 4: 대시보드 구성/부하 테스트/알림 설정/Jennifer·Prometheus 비교,docs/scouter-guide.md Part 4,⭐⭐⭐,Scouter를 활용하여 성능 이슈를 직접 발견할 수 있어야 한다,☐
+2주차,Day 9,2,Scouter 실전 활용 + 핸즈온,0:40~2:00,Part 5: 실습 과제 12종 중 6개 수행 (기초~중급),docs/scouter-guide.md Part 5 실습 1~6,⭐⭐⭐,Scouter를 활용하여 성능 이슈를 직접 발견할 수 있어야 한다,☐
+2주차,Day 10,2,모니터링 메트릭스 설계,0:00~0:30,Four Golden Signals (지연/트래픽/에러/포화도),docs/monitoring-metrics.md §1,⭐⭐⭐,SRE 관점에서 SLI/SLO를 정의하고 Prometheus 알림을 구성할 수 있어야 한다,☐
+2주차,Day 10,2,모니터링 메트릭스 설계,0:30~1:00,SLI / SLO / SLA 정의/핵심 메트릭 상세,docs/monitoring-metrics.md §2~3,⭐⭐⭐,SRE 관점에서 SLI/SLO를 정의하고 Prometheus 알림을 구성할 수 있어야 한다,☐
+2주차,Day 10,2,모니터링 메트릭스 설계,1:00~1:30,Prometheus 알림 규칙/Grafana 대시보드 설계,docs/monitoring-metrics.md §4~5,⭐⭐⭐,SRE 관점에서 SLI/SLO를 정의하고 Prometheus 알림을 구성할 수 있어야 한다,☐
+2주차,Day 10,2,모니터링 메트릭스 설계,1:30~2:00,PromQL 실전 쿼리 레시피/모니터링 체크리스트,docs/monitoring-metrics.md §6~8,⭐⭐⭐,SRE 관점에서 SLI/SLO를 정의하고 Prometheus 알림을 구성할 수 있어야 한다,☐
+3주차,Day 11,2,Nginx + Tomcat/JVM 튜닝,0:00~1:00,Nginx 튜닝: worker/keepalive/버퍼/gzip/rate limiting,docs/performance-tuning.md §1,⭐⭐⭐,Nginx/Tomcat 설정값의 의미와 튜닝 방향을 설명할 수 있어야 한다,☐
+3주차,Day 11,2,Nginx + Tomcat/JVM 튜닝,1:00~2:00,Tomcat/JVM 튜닝: 스레드풀/힙/GC 알고리즘/로깅,docs/performance-tuning.md §2,⭐⭐⭐,Nginx/Tomcat 설정값의 의미와 튜닝 방향을 설명할 수 있어야 한다,☐
+3주차,Day 12,2,MySQL + Docker 튜닝,0:00~1:00,MySQL 튜닝: buffer pool/커넥션/slow query/EXPLAIN/인덱싱,docs/performance-tuning.md §3,⭐⭐⭐,전 계층의 성능 튜닝 포인트를 체크리스트로 점검할 수 있어야 한다,☐
+3주차,Day 12,2,MySQL + Docker 튜닝,1:00~1:30,Docker 리소스 관리: 메모리 제한/OOM 방지/모니터링,docs/performance-tuning.md §4,⭐⭐⭐,전 계층의 성능 튜닝 포인트를 체크리스트로 점검할 수 있어야 한다,☐
+3주차,Day 12,2,MySQL + Docker 튜닝,1:30~2:00,성능 측정 방법 (ab/wrk/부하 테스트) + 체크리스트,docs/performance-tuning.md §5~6,⭐⭐⭐,전 계층의 성능 튜닝 포인트를 체크리스트로 점검할 수 있어야 한다,☐
+3주차,Day 13,2,TLS/SSL + PKI 보안,0:00~1:00,TLS/SSL 딥다이브: 핸드셰이크/TLS 1.2 vs 1.3/Cipher Suite,docs/security-deep-dive.md §1,⭐⭐⭐,TLS 핸드셰이크 과정을 단계별로 설명할 수 있어야 한다,☐
+3주차,Day 13,2,TLS/SSL + PKI 보안,1:00~2:00,PKI & 인증서 체인 구조,docs/security-deep-dive.md §2,⭐⭐⭐,TLS 핸드셰이크 과정을 단계별로 설명할 수 있어야 한다,☐
+3주차,Day 14,2,OAuth2/OIDC + 웹 보안,0:00~0:50,OAuth 2.0 / OIDC 딥다이브,docs/security-deep-dive.md §3,⭐⭐⭐,OAuth2 플로우를 그릴 수 있고 OWASP 주요 위협을 식별할 수 있어야 한다,☐
+3주차,Day 14,2,OAuth2/OIDC + 웹 보안,0:50~1:30,Spring Security + Keycloak 통합,docs/security-deep-dive.md §4,⭐⭐⭐,OAuth2 플로우를 그릴 수 있고 OWASP 주요 위협을 식별할 수 있어야 한다,☐
+3주차,Day 14,2,OAuth2/OIDC + 웹 보안,1:30~2:00,OWASP Top 10 핵심 항목,docs/security-deep-dive.md §5,⭐⭐⭐,OAuth2 플로우를 그릴 수 있고 OWASP 주요 위협을 식별할 수 있어야 한다,☐
+3주차,Day 15,2,Docker 보안 + Scouter 고급 실습 + 3주차 복습,0:00~0:40,Docker 보안 + 보안 체크리스트,docs/security-deep-dive.md §6~7,⭐⭐⭐,보안 체크리스트 기반으로 시스템을 점검하고 Scouter 고급 실습까지 완료하는 것이다,☐
+3주차,Day 15,2,Docker 보안 + Scouter 고급 실습 + 3주차 복습,0:40~1:20,Scouter 실습 과제 나머지 6개 수행 (중급~고급),docs/scouter-guide.md Part 5 실습 7~12,⭐⭐⭐,보안 체크리스트 기반으로 시스템을 점검하고 Scouter 고급 실습까지 완료하는 것이다,☐
+3주차,Day 15,2,Docker 보안 + Scouter 고급 실습 + 3주차 복습,1:20~2:00,성능·보안 핵심 개념 노트 정리,복습,⭐⭐⭐,보안 체크리스트 기반으로 시스템을 점검하고 Scouter 고급 실습까지 완료하는 것이다,☐
+4주차,Day 16,2,인시던트 대응 프로세스,0:00~0:30,인시던트 대응 5단계 프레임워크/P1~P4 심각도,docs/incident-response.md §1,⭐⭐⭐,장애 발생 시 체계적으로 대응하고 보고서를 작성할 수 있어야 한다,☐
+4주차,Day 16,2,인시던트 대응 프로세스,0:30~1:15,시나리오 1~5: OOM Kill/커넥션풀 고갈/GC Storm/Slow Query/502·504,docs/incident-response.md §2~6,⭐⭐⭐,장애 발생 시 체계적으로 대응하고 보고서를 작성할 수 있어야 한다,☐
+4주차,Day 16,2,인시던트 대응 프로세스,1:15~2:00,시나리오 6~8: SSL 만료/SSO 장애/Docker Disk Full + 인시던트 보고서 작성법,docs/incident-response.md §7~10,⭐⭐⭐,장애 발생 시 체계적으로 대응하고 보고서를 작성할 수 있어야 한다,☐
+4주차,Day 17,2,인프라 설계 (전반),0:00~1:00,로드밸런싱 알고리즘 (Round Robin/Weighted/Least Conn/IP Hash 등),docs/infrastructure-design.md §1,⭐⭐⭐,각 로드밸런싱 및 배포 전략의 장단점을 비교할 수 있어야 한다,☐
+4주차,Day 17,2,인프라 설계 (전반),1:00~2:00,세션 관리 전략/배포 전략 (Blue-Green/Canary/Rolling),docs/infrastructure-design.md §2~3,⭐⭐⭐,각 로드밸런싱 및 배포 전략의 장단점을 비교할 수 있어야 한다,☐
+4주차,Day 18,2,인프라 설계 (후반),0:00~0:40,고가용성(HA) 설계,docs/infrastructure-design.md §4,⭐⭐⭐,프로덕션 수준의 인프라 설계 원칙을 적용할 수 있어야 한다,☐
+4주차,Day 18,2,인프라 설계 (후반),0:40~1:10,네트워크 설계/Capacity Planning,docs/infrastructure-design.md §5~6,⭐⭐⭐,프로덕션 수준의 인프라 설계 원칙을 적용할 수 있어야 한다,☐
+4주차,Day 18,2,인프라 설계 (후반),1:10~1:40,백업/복구/확장성 설계,docs/infrastructure-design.md §7~8,⭐⭐⭐,프로덕션 수준의 인프라 설계 원칙을 적용할 수 있어야 한다,☐
+4주차,Day 18,2,인프라 설계 (후반),1:40~2:00,인프라 체크리스트,docs/infrastructure-design.md §9,⭐⭐⭐,프로덕션 수준의 인프라 설계 원칙을 적용할 수 있어야 한다,☐
+4주차,Day 19,2,종합 실습,0:00~0:30,테스트 리포트 검토 — 26개 테스트 항목을 이해한다,docs/test-report.md,⭐⭐,모니터링→분석→튜닝→검증의 전체 사이클을 직접 경험하는 것이다,☐
+4주차,Day 19,2,종합 실습,0:30~2:00,종합 시나리오 실습: 부하 테스트→Scouter 병목 탐지→튜닝→재측정,실습,⭐⭐⭐,모니터링→분석→튜닝→검증의 전체 사이클을 직접 경험하는 것이다,☐
+4주차,Day 20,2,최종 복습 + 면접 대비,0:00~1:00,전체 핵심 개념 정리 (아키텍처/모니터링/성능/보안/운영),복습,⭐⭐⭐,전체 학습 내용을 면접에서 설명할 수 있어야 한다,☐
+4주차,Day 20,2,최종 복습 + 면접 대비,1:00~2:00,예상 질문 기반 셀프 점검 (체크리스트 활용),셀프 테스트,⭐⭐⭐,전체 학습 내용을 면접에서 설명할 수 있어야 한다,☐
+
+,,,,,,,,
+문서별 학습시간 요약,,,,,,,,
+문서,분량(줄),학습시간,학습일,비고,,,,
+README.md,215,45분,Day 1,오리엔테이션,,,,
+user-guide.md,566,2시간,Day 2,전체 실습,,,,
+architecture.md,1555,4시간,Day 3~4,핵심 이론,,,,
+troubleshooting.md,429,1시간,Day 5,장애 입문,,,,
+scouter-guide.md,3757,~8.5시간,Day 6~9 + Day 15,최대 분량,,,,
+monitoring-metrics.md,1475,2시간,Day 10,SRE 메트릭,,,,
+performance-tuning.md,1346,4시간,Day 11~12,튜닝 실습,,,,
+security-deep-dive.md,1777,~4.5시간,Day 13~15,보안 심화,,,,
+incident-response.md,1455,2시간,Day 16,운영 대응,,,,
+infrastructure-design.md,1785,4시간,Day 17~18,설계 원칙,,,,
+test-report.md,324,30분,Day 19,참고 문서,,,,
+복습/실습,—,~7시간,Day 1/5/15/19/20,노트 정리/종합 실습/셀프 테스트,,,,
+합계,14684,~40시간,20일,,,,,
+
+,,,,,,,,
+셀프 체크리스트,,,,,,,,
+주차,체크항목,완료,,,,,,
+1주차 기초,3-Tier 아키텍처를 화이트보드에 그릴 수 있는가?,☐,,,,,,
+1주차 기초,요청 흐름 (Client→Nginx→Tomcat→MySQL→응답)을 설명할 수 있는가?,☐,,,,,,
+1주차 기초,docker-compose로 전체 환경을 띄우고 각 서비스에 접근할 수 있는가?,☐,,,,,,
+1주차 기초,SSL/TLS 핸드셰이크 과정을 단계별로 설명할 수 있는가?,☐,,,,,,
+2주차 모니터링,APM의 역할과 Scouter의 바이트코드 계측 원리를 설명할 수 있는가?,☐,,,,,,
+2주차 모니터링,XLog를 보고 느린 트랜잭션을 식별할 수 있는가?,☐,,,,,,
+2주차 모니터링,Four Golden Signals를 정의하고 각각의 메트릭 예시를 들 수 있는가?,☐,,,,,,
+2주차 모니터링,SLI/SLO/SLA의 차이를 설명할 수 있는가?,☐,,,,,,
+2주차 모니터링,PromQL로 기본적인 메트릭 쿼리를 작성할 수 있는가?,☐,,,,,,
+3주차 성능·보안,Nginx worker/Tomcat 스레드풀/JVM 힙 튜닝 방향을 설명할 수 있는가?,☐,,,,,,
+3주차 성능·보안,MySQL slow query를 EXPLAIN으로 분석할 수 있는가?,☐,,,,,,
+3주차 성능·보안,TLS 1.2와 1.3의 차이를 설명할 수 있는가?,☐,,,,,,
+3주차 성능·보안,OAuth2 Authorization Code Flow를 그릴 수 있는가?,☐,,,,,,
+3주차 성능·보안,OWASP Top 10 중 3가지 이상을 설명할 수 있는가?,☐,,,,,,
+4주차 운영·설계,인시던트 대응 5단계를 순서대로 설명할 수 있는가?,☐,,,,,,
+4주차 운영·설계,OOM/GC Storm/커넥션풀 고갈 시 대응 절차를 설명할 수 있는가?,☐,,,,,,
+4주차 운영·설계,Blue-Green/Canary/Rolling 배포의 차이를 설명할 수 있는가?,☐,,,,,,
+4주차 운영·설계,고가용성(HA) 설계 원칙을 3가지 이상 설명할 수 있는가?,☐,,,,,,
+4주차 운영·설계,모니터링→분석→튜닝→검증 사이클을 직접 수행할 수 있는가?,☐,,,,,,
