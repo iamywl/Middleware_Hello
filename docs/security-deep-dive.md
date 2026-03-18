@@ -1,6 +1,7 @@
 # 보안 심화 가이드
 
-> **대상 독자**: 경력 3년차 이상 백엔드/인프라 엔지니어
+> **대상 독자**: WEB/WAS 미들웨어 보안에 관심 있는 엔지니어 (초보자도 순서대로 읽으면 따라갈 수 있도록 구성하였다)
+> **선행 학습**: [사용자 가이드](user-guide.md)와 [아키텍처 문서](architecture.md)를 먼저 읽으면 이해가 쉽다
 > **프로젝트 구성**: Nginx (리버스 프록시) + Tomcat x2 (WAS) + MySQL + Scouter APM + Prometheus + Grafana + Keycloak (SSO) on Docker Compose
 > **인증서**: 자체 서명 CA (Self-Signed CA) 기반 TLS
 

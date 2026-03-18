@@ -1,0 +1,178 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" font-family="'Segoe UI', 'Noto Sans KR', Arial, sans-serif">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="webGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#16a34a"/>
+    </linearGradient>
+    <linearGradient id="wasGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+    <linearGradient id="dbGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="monGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="secGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#dc2626"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="900" fill="url(#bgGrad)" rx="12"/>
+
+  <!-- Title -->
+  <text x="600" y="45" text-anchor="middle" fill="#f8fafc" font-size="24" font-weight="bold">WEB/WAS 미들웨어 시스템 아키텍처 전체 구성도</text>
+  <text x="600" y="70" text-anchor="middle" fill="#94a3b8" font-size="13">3-Tier Architecture + APM Monitoring + SSO Authentication + SSL Security</text>
+
+  <!-- Layer Labels (Left Side) -->
+  <text x="30" y="155" fill="#22c55e" font-size="12" font-weight="bold" transform="rotate(-90,30,155)">WEB 계층</text>
+  <text x="30" y="365" fill="#3b82f6" font-size="12" font-weight="bold" transform="rotate(-90,30,365)">WAS 계층</text>
+  <text x="30" y="560" fill="#f59e0b" font-size="12" font-weight="bold" transform="rotate(-90,30,560)">DB 계층</text>
+  <text x="30" y="760" fill="#a855f7" font-size="12" font-weight="bold" transform="rotate(-90,30,760)">모니터링 계층</text>
+
+  <!-- Client Browser -->
+  <rect x="480" y="85" width="240" height="50" rx="25" fill="#334155" stroke="#64748b" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="600" y="115" text-anchor="middle" fill="#f8fafc" font-size="14" font-weight="bold">🌐 클라이언트 브라우저</text>
+
+  <!-- Arrow: Client → Nginx -->
+  <line x1="600" y1="135" x2="600" y2="170" stroke="#22c55e" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+  <text x="620" y="157" fill="#22c55e" font-size="10" font-weight="bold">HTTPS :443</text>
+  <defs><marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#22c55e"/></marker></defs>
+
+  <!-- WEB Layer: Nginx -->
+  <rect x="55" y="170" width="1090" height="110" rx="10" fill="none" stroke="#22c55e" stroke-width="1" stroke-dasharray="6 3" opacity="0.4"/>
+  <rect x="380" y="180" width="440" height="90" rx="10" fill="url(#webGrad)" filter="url(#shadow)" opacity="0.95"/>
+  <text x="600" y="210" text-anchor="middle" fill="#fff" font-size="16" font-weight="bold">Nginx 1.24 — 리버스 프록시</text>
+  <text x="600" y="230" text-anchor="middle" fill="#dcfce7" font-size="11">SSL 종료 (TLS 1.2/1.3)  |  Round Robin 로드밸런싱  |  Gzip 압축</text>
+  <text x="600" y="250" text-anchor="middle" fill="#dcfce7" font-size="11">HTTP→HTTPS 리다이렉트  |  HSTS 헤더  |  정적 자원 캐싱 (7일)</text>
+  <text x="600" y="262" text-anchor="middle" fill="#bbf7d0" font-size="9">:80 (HTTP) / :443 (HTTPS) / /stub_status (메트릭)</text>
+
+  <!-- Arrows: Nginx → Tomcat1, Tomcat2 -->
+  <line x1="520" y1="270" x2="380" y2="320" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  <line x1="680" y1="270" x2="820" y2="320" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  <text x="430" y="295" fill="#93c5fd" font-size="10">Round Robin</text>
+  <text x="720" y="295" fill="#93c5fd" font-size="10">Round Robin</text>
+  <defs><marker id="arrowBlue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#3b82f6"/></marker></defs>
+
+  <!-- WAS Layer -->
+  <rect x="55" y="310" width="1090" height="170" rx="10" fill="none" stroke="#3b82f6" stroke-width="1" stroke-dasharray="6 3" opacity="0.4"/>
+
+  <!-- Tomcat #1 -->
+  <rect x="180" y="320" width="380" height="150" rx="10" fill="url(#wasGrad)" filter="url(#shadow)" opacity="0.95"/>
+  <text x="370" y="345" text-anchor="middle" fill="#fff" font-size="15" font-weight="bold">Tomcat #1 (mw-tomcat1)</text>
+  <rect x="210" y="355" width="320" height="55" rx="6" fill="#1e3a5f" opacity="0.7"/>
+  <text x="370" y="375" text-anchor="middle" fill="#93c5fd" font-size="12" font-weight="bold">Spring Boot 3.x (WAR)</text>
+  <text x="370" y="395" text-anchor="middle" fill="#bfdbfe" font-size="10">HealthController | SecuredController | Actuator</text>
+  <rect x="210" y="416" width="150" height="30" rx="5" fill="#7c3aed" opacity="0.8"/>
+  <text x="285" y="436" text-anchor="middle" fill="#e9d5ff" font-size="10" font-weight="bold">Scouter Agent</text>
+  <rect x="380" y="416" width="150" height="30" rx="5" fill="#334155"/>
+  <text x="455" y="436" text-anchor="middle" fill="#94a3b8" font-size="10">JVM: 256~512MB</text>
+  <text x="370" y="462" text-anchor="middle" fill="#bfdbfe" font-size="9">:8080 (내부) | /actuator/prometheus</text>
+
+  <!-- Tomcat #2 -->
+  <rect x="640" y="320" width="380" height="150" rx="10" fill="url(#wasGrad)" filter="url(#shadow)" opacity="0.95"/>
+  <text x="830" y="345" text-anchor="middle" fill="#fff" font-size="15" font-weight="bold">Tomcat #2 (mw-tomcat2)</text>
+  <rect x="670" y="355" width="320" height="55" rx="6" fill="#1e3a5f" opacity="0.7"/>
+  <text x="830" y="375" text-anchor="middle" fill="#93c5fd" font-size="12" font-weight="bold">Spring Boot 3.x (WAR)</text>
+  <text x="830" y="395" text-anchor="middle" fill="#bfdbfe" font-size="10">HealthController | SecuredController | Actuator</text>
+  <rect x="670" y="416" width="150" height="30" rx="5" fill="#7c3aed" opacity="0.8"/>
+  <text x="745" y="436" text-anchor="middle" fill="#e9d5ff" font-size="10" font-weight="bold">Scouter Agent</text>
+  <rect x="840" y="416" width="150" height="30" rx="5" fill="#334155"/>
+  <text x="915" y="436" text-anchor="middle" fill="#94a3b8" font-size="10">JVM: 256~512MB</text>
+  <text x="830" y="462" text-anchor="middle" fill="#bfdbfe" font-size="9">:8080 (내부) | /actuator/prometheus</text>
+
+  <!-- Arrow: Tomcat → MySQL -->
+  <line x1="370" y1="470" x2="500" y2="530" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowYellow)"/>
+  <line x1="830" y1="470" x2="700" y2="530" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowYellow)"/>
+  <text x="410" y="505" fill="#fcd34d" font-size="10">JDBC</text>
+  <text x="775" y="505" fill="#fcd34d" font-size="10">JDBC</text>
+  <defs><marker id="arrowYellow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#f59e0b"/></marker></defs>
+
+  <!-- DB Layer -->
+  <rect x="55" y="520" width="1090" height="105" rx="10" fill="none" stroke="#f59e0b" stroke-width="1" stroke-dasharray="6 3" opacity="0.4"/>
+  <rect x="430" y="530" width="340" height="85" rx="10" fill="url(#dbGrad)" filter="url(#shadow)" opacity="0.95"/>
+  <text x="600" y="560" text-anchor="middle" fill="#fff" font-size="16" font-weight="bold">MySQL 8.0</text>
+  <text x="600" y="580" text-anchor="middle" fill="#fef3c7" font-size="11">middleware_db | app_user</text>
+  <text x="600" y="600" text-anchor="middle" fill="#fde68a" font-size="10">:3306 | Volume: mysql_data (영속 저장)</text>
+
+  <!-- Keycloak (Security) -->
+  <rect x="860" y="530" width="260" height="85" rx="10" fill="url(#secGrad)" filter="url(#shadow)" opacity="0.95"/>
+  <text x="990" y="557" text-anchor="middle" fill="#fff" font-size="15" font-weight="bold">🔐 Keycloak 24.0</text>
+  <text x="990" y="577" text-anchor="middle" fill="#fecaca" font-size="11">SSO / OIDC 인증 서버</text>
+  <text x="990" y="597" text-anchor="middle" fill="#fca5a5" font-size="10">:8080 | middleware-realm</text>
+
+  <!-- Arrow: Tomcat → Keycloak -->
+  <line x1="950" y1="470" x2="970" y2="530" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arrowRed)"/>
+  <text x="975" y="505" fill="#fca5a5" font-size="9">OIDC Token</text>
+  <defs><marker id="arrowRed" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#ef4444"/></marker></defs>
+
+  <!-- Monitoring Layer -->
+  <rect x="55" y="650" width="1090" height="230" rx="10" fill="none" stroke="#a855f7" stroke-width="1" stroke-dasharray="6 3" opacity="0.4"/>
+
+  <!-- Scouter Server -->
+  <rect x="80" y="670" width="220" height="95" rx="10" fill="url(#monGrad)" filter="url(#shadow)" opacity="0.95"/>
+  <text x="190" y="697" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Scouter Server</text>
+  <text x="190" y="717" text-anchor="middle" fill="#e9d5ff" font-size="11">APM 데이터 수집/저장</text>
+  <text x="190" y="737" text-anchor="middle" fill="#d8b4fe" font-size="10">UDP/TCP :6100 | HTTP :6180</text>
+  <text x="190" y="752" text-anchor="middle" fill="#c4b5fd" font-size="9">XLog, TPS, Active Service</text>
+
+  <!-- Prometheus -->
+  <rect x="330" y="670" width="220" height="95" rx="10" fill="url(#monGrad)" filter="url(#shadow)" opacity="0.95"/>
+  <text x="440" y="697" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Prometheus</text>
+  <text x="440" y="717" text-anchor="middle" fill="#e9d5ff" font-size="11">메트릭 수집 (Pull 15초)</text>
+  <text x="440" y="737" text-anchor="middle" fill="#d8b4fe" font-size="10">:9090 | 보관: 15일</text>
+  <text x="440" y="752" text-anchor="middle" fill="#c4b5fd" font-size="9">PromQL 시계열 DB</text>
+
+  <!-- Grafana -->
+  <rect x="580" y="670" width="220" height="95" rx="10" fill="url(#monGrad)" filter="url(#shadow)" opacity="0.95"/>
+  <text x="690" y="697" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Grafana</text>
+  <text x="690" y="717" text-anchor="middle" fill="#e9d5ff" font-size="11">모니터링 대시보드</text>
+  <text x="690" y="737" text-anchor="middle" fill="#d8b4fe" font-size="10">:3000 | admin/admin</text>
+  <text x="690" y="752" text-anchor="middle" fill="#c4b5fd" font-size="9">Middleware Overview</text>
+
+  <!-- Exporters -->
+  <rect x="830" y="670" width="140" height="95" rx="10" fill="#334155" stroke="#7c3aed" stroke-width="1" filter="url(#shadow)"/>
+  <text x="900" y="695" text-anchor="middle" fill="#e9d5ff" font-size="12" font-weight="bold">Node Exporter</text>
+  <text x="900" y="715" text-anchor="middle" fill="#a5b4fc" font-size="10">CPU/메모리/디스크</text>
+  <text x="900" y="735" text-anchor="middle" fill="#94a3b8" font-size="9">:9100</text>
+
+  <rect x="990" y="670" width="140" height="95" rx="10" fill="#334155" stroke="#7c3aed" stroke-width="1" filter="url(#shadow)"/>
+  <text x="1060" y="695" text-anchor="middle" fill="#e9d5ff" font-size="12" font-weight="bold">Nginx Exporter</text>
+  <text x="1060" y="715" text-anchor="middle" fill="#a5b4fc" font-size="10">연결수/요청수</text>
+  <text x="1060" y="735" text-anchor="middle" fill="#94a3b8" font-size="9">:9113</text>
+
+  <!-- Data flow arrows for monitoring -->
+  <line x1="285" y1="450" x2="190" y2="670" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.6"/>
+  <line x1="745" y1="450" x2="190" y2="670" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.6"/>
+  <text x="140" y="580" fill="#c4b5fd" font-size="9" transform="rotate(-55,140,580)">Agent→Server</text>
+
+  <!-- Arrow: Prometheus → Grafana -->
+  <line x1="550" y1="718" x2="580" y2="718" stroke="#a855f7" stroke-width="2" marker-end="url(#arrowPurple)"/>
+  <defs><marker id="arrowPurple" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#a855f7"/></marker></defs>
+
+  <!-- Legend -->
+  <rect x="80" y="795" width="1050" height="85" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="600" y="818" text-anchor="middle" fill="#94a3b8" font-size="12" font-weight="bold">범례 (Legend)</text>
+  <rect x="110" y="830" width="14" height="14" rx="3" fill="#22c55e"/><text x="132" y="843" fill="#cbd5e1" font-size="11">WEB 계층 (Nginx)</text>
+  <rect x="300" y="830" width="14" height="14" rx="3" fill="#3b82f6"/><text x="322" y="843" fill="#cbd5e1" font-size="11">WAS 계층 (Tomcat×2)</text>
+  <rect x="510" y="830" width="14" height="14" rx="3" fill="#f59e0b"/><text x="532" y="843" fill="#cbd5e1" font-size="11">DB 계층 (MySQL)</text>
+  <rect x="700" y="830" width="14" height="14" rx="3" fill="#a855f7"/><text x="722" y="843" fill="#cbd5e1" font-size="11">모니터링 (Scouter/Prometheus/Grafana)</text>
+  <rect x="980" y="830" width="14" height="14" rx="3" fill="#ef4444"/><text x="1002" y="843" fill="#cbd5e1" font-size="11">인증 (Keycloak)</text>
+  <text x="600" y="868" text-anchor="middle" fill="#64748b" font-size="10">Docker Compose — 10개 컨테이너 | mw-network (bridge) | docker-compose up -d 한 줄로 전체 구동</text>
+</svg>

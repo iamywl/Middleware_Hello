@@ -1,7 +1,7 @@
 # 모니터링 지표 및 Alert 설정 가이드
 
 > 본 문서는 Nginx + Tomcat(x2) + MySQL + Scouter APM + Prometheus + Grafana + Keycloak 기반 미들웨어 환경에서의 모니터링 지표 정의, Alert 규칙 설정, 대시보드 설계를 다룬다.
-> 대상 독자: 3년차 이상 인프라/백엔드 엔지니어
+> **대상 독자**: 미들웨어 모니터링을 학습하려는 엔지니어 (초보자도 [사용자 가이드](user-guide.md) 5~6장을 먼저 실습한 뒤 읽으면 따라갈 수 있다)
 
 ---
 

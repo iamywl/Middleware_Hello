@@ -1,0 +1,169 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 850" font-family="'Segoe UI', 'Noto Sans KR', Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0c1222"/>
+      <stop offset="100%" stop-color="#162032"/>
+    </linearGradient>
+    <filter id="sh2">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="850" fill="url(#bg2)" rx="12"/>
+
+  <!-- Title -->
+  <text x="600" y="40" text-anchor="middle" fill="#f1f5f9" font-size="22" font-weight="bold">네트워크 및 포트 매핑 구성도</text>
+  <text x="600" y="62" text-anchor="middle" fill="#94a3b8" font-size="12">Docker Bridge Network (mw-network: 172.18.0.0/16) — 외부 포트 매핑 + 내부 DNS 통신</text>
+
+  <!-- External Zone -->
+  <rect x="40" y="80" width="1120" height="110" rx="10" fill="#1a1a2e" stroke="#475569" stroke-width="1.5" stroke-dasharray="8 4"/>
+  <text x="60" y="105" fill="#94a3b8" font-size="13" font-weight="bold">외부 네트워크 (호스트 OS / 사용자 PC)</text>
+
+  <!-- External Client -->
+  <rect x="80" y="115" width="160" height="50" rx="8" fill="#334155" filter="url(#sh2)"/>
+  <text x="160" y="145" text-anchor="middle" fill="#f1f5f9" font-size="13" font-weight="bold">🖥️ 사용자 PC</text>
+
+  <!-- External Port boxes -->
+  <g transform="translate(300, 115)">
+    <rect width="80" height="50" rx="6" fill="#166534" filter="url(#sh2)"/>
+    <text x="40" y="22" text-anchor="middle" fill="#4ade80" font-size="11" font-weight="bold">:443</text>
+    <text x="40" y="38" text-anchor="middle" fill="#86efac" font-size="9">HTTPS</text>
+  </g>
+  <g transform="translate(390, 115)">
+    <rect width="80" height="50" rx="6" fill="#166534" filter="url(#sh2)"/>
+    <text x="40" y="22" text-anchor="middle" fill="#4ade80" font-size="11" font-weight="bold">:80</text>
+    <text x="40" y="38" text-anchor="middle" fill="#86efac" font-size="9">HTTP</text>
+  </g>
+  <g transform="translate(480, 115)">
+    <rect width="80" height="50" rx="6" fill="#7c2d12" filter="url(#sh2)"/>
+    <text x="40" y="22" text-anchor="middle" fill="#fb923c" font-size="11" font-weight="bold">:8080</text>
+    <text x="40" y="38" text-anchor="middle" fill="#fdba74" font-size="9">Keycloak</text>
+  </g>
+  <g transform="translate(570, 115)">
+    <rect width="80" height="50" rx="6" fill="#581c87" filter="url(#sh2)"/>
+    <text x="40" y="22" text-anchor="middle" fill="#c084fc" font-size="11" font-weight="bold">:3000</text>
+    <text x="40" y="38" text-anchor="middle" fill="#d8b4fe" font-size="9">Grafana</text>
+  </g>
+  <g transform="translate(660, 115)">
+    <rect width="80" height="50" rx="6" fill="#581c87" filter="url(#sh2)"/>
+    <text x="40" y="22" text-anchor="middle" fill="#c084fc" font-size="11" font-weight="bold">:9090</text>
+    <text x="40" y="38" text-anchor="middle" fill="#d8b4fe" font-size="9">Prometheus</text>
+  </g>
+  <g transform="translate(750, 115)">
+    <rect width="80" height="50" rx="6" fill="#581c87" filter="url(#sh2)"/>
+    <text x="40" y="22" text-anchor="middle" fill="#c084fc" font-size="11" font-weight="bold">:6100</text>
+    <text x="40" y="38" text-anchor="middle" fill="#d8b4fe" font-size="9">Scouter</text>
+  </g>
+  <g transform="translate(840, 115)">
+    <rect width="80" height="50" rx="6" fill="#1e3a5f" filter="url(#sh2)"/>
+    <text x="40" y="22" text-anchor="middle" fill="#60a5fa" font-size="11" font-weight="bold">:3306</text>
+    <text x="40" y="38" text-anchor="middle" fill="#93c5fd" font-size="9">MySQL</text>
+  </g>
+  <g transform="translate(930, 115)">
+    <rect width="80" height="50" rx="6" fill="#334155" filter="url(#sh2)"/>
+    <text x="40" y="22" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="bold">:9100</text>
+    <text x="40" y="38" text-anchor="middle" fill="#cbd5e1" font-size="9">NodeExp</text>
+  </g>
+  <g transform="translate(1020, 115)">
+    <rect width="80" height="50" rx="6" fill="#334155" filter="url(#sh2)"/>
+    <text x="40" y="22" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="bold">:9113</text>
+    <text x="40" y="38" text-anchor="middle" fill="#cbd5e1" font-size="9">NginxExp</text>
+  </g>
+
+  <!-- NAT/Port Forwarding arrows -->
+  <text x="600" y="210" text-anchor="middle" fill="#64748b" font-size="11" font-weight="bold">▼  NAT / 포트 포워딩  ▼</text>
+
+  <!-- Docker Internal Network -->
+  <rect x="40" y="225" width="1120" height="580" rx="10" fill="#0f1729" stroke="#6366f1" stroke-width="2"/>
+  <text x="600" y="250" text-anchor="middle" fill="#818cf8" font-size="14" font-weight="bold">🐳 mw-network (Docker Bridge: 172.18.0.0/16)</text>
+  <text x="600" y="268" text-anchor="middle" fill="#6366f1" font-size="10">Docker 내장 DNS — 컨테이너 이름으로 통신 (IP 하드코딩 불필요)</text>
+
+  <!-- Nginx Container -->
+  <rect x="80" y="290" width="250" height="120" rx="10" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#sh2)"/>
+  <text x="205" y="315" text-anchor="middle" fill="#4ade80" font-size="14" font-weight="bold">mw-nginx</text>
+  <text x="205" y="335" text-anchor="middle" fill="#86efac" font-size="11">Nginx 1.24</text>
+  <text x="205" y="355" text-anchor="middle" fill="#bbf7d0" font-size="10">내부: 80, 443</text>
+  <text x="205" y="375" text-anchor="middle" fill="#bbf7d0" font-size="10">외부: 80→80, 443→443</text>
+  <text x="205" y="400" text-anchor="middle" fill="#6ee7b7" font-size="9">DNS: nginx</text>
+
+  <!-- Tomcat1 Container -->
+  <rect x="80" y="430" width="250" height="110" rx="10" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.5" filter="url(#sh2)"/>
+  <text x="205" y="455" text-anchor="middle" fill="#60a5fa" font-size="14" font-weight="bold">mw-tomcat1</text>
+  <text x="205" y="475" text-anchor="middle" fill="#93c5fd" font-size="11">Tomcat 10.1 + Spring Boot</text>
+  <text x="205" y="495" text-anchor="middle" fill="#bfdbfe" font-size="10">내부: 8080</text>
+  <text x="205" y="510" text-anchor="middle" fill="#bfdbfe" font-size="10">외부: ❌ 미노출 (보안)</text>
+  <text x="205" y="530" text-anchor="middle" fill="#7dd3fc" font-size="9">DNS: tomcat1</text>
+
+  <!-- Tomcat2 Container -->
+  <rect x="360" y="430" width="250" height="110" rx="10" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.5" filter="url(#sh2)"/>
+  <text x="485" y="455" text-anchor="middle" fill="#60a5fa" font-size="14" font-weight="bold">mw-tomcat2</text>
+  <text x="485" y="475" text-anchor="middle" fill="#93c5fd" font-size="11">Tomcat 10.1 + Spring Boot</text>
+  <text x="485" y="495" text-anchor="middle" fill="#bfdbfe" font-size="10">내부: 8080</text>
+  <text x="485" y="510" text-anchor="middle" fill="#bfdbfe" font-size="10">외부: ❌ 미노출 (보안)</text>
+  <text x="485" y="530" text-anchor="middle" fill="#7dd3fc" font-size="9">DNS: tomcat2</text>
+
+  <!-- MySQL Container -->
+  <rect x="640" y="430" width="200" height="110" rx="10" fill="#422006" stroke="#f59e0b" stroke-width="1.5" filter="url(#sh2)"/>
+  <text x="740" y="455" text-anchor="middle" fill="#fbbf24" font-size="14" font-weight="bold">mw-mysql</text>
+  <text x="740" y="475" text-anchor="middle" fill="#fde68a" font-size="11">MySQL 8.0</text>
+  <text x="740" y="495" text-anchor="middle" fill="#fef3c7" font-size="10">내부: 3306</text>
+  <text x="740" y="510" text-anchor="middle" fill="#fef3c7" font-size="10">외부: 3306→3306</text>
+  <text x="740" y="530" text-anchor="middle" fill="#fcd34d" font-size="9">DNS: mysql</text>
+
+  <!-- Keycloak Container -->
+  <rect x="870" y="430" width="260" height="110" rx="10" fill="#450a0a" stroke="#ef4444" stroke-width="1.5" filter="url(#sh2)"/>
+  <text x="1000" y="455" text-anchor="middle" fill="#f87171" font-size="14" font-weight="bold">mw-keycloak</text>
+  <text x="1000" y="475" text-anchor="middle" fill="#fca5a5" font-size="11">Keycloak 24.0 (SSO)</text>
+  <text x="1000" y="495" text-anchor="middle" fill="#fecaca" font-size="10">내부: 8080</text>
+  <text x="1000" y="510" text-anchor="middle" fill="#fecaca" font-size="10">외부: 8080→8080</text>
+  <text x="1000" y="530" text-anchor="middle" fill="#fca5a5" font-size="9">DNS: keycloak</text>
+
+  <!-- Monitoring Containers Row -->
+  <rect x="80" y="560" width="180" height="100" rx="10" fill="#2e1065" stroke="#a855f7" stroke-width="1.5" filter="url(#sh2)"/>
+  <text x="170" y="585" text-anchor="middle" fill="#c084fc" font-size="13" font-weight="bold">mw-scouter</text>
+  <text x="170" y="605" text-anchor="middle" fill="#d8b4fe" font-size="10">Scouter Server</text>
+  <text x="170" y="625" text-anchor="middle" fill="#e9d5ff" font-size="10">UDP/TCP :6100</text>
+  <text x="170" y="645" text-anchor="middle" fill="#e9d5ff" font-size="9">HTTP :6180</text>
+
+  <rect x="280" y="560" width="180" height="100" rx="10" fill="#2e1065" stroke="#a855f7" stroke-width="1.5" filter="url(#sh2)"/>
+  <text x="370" y="585" text-anchor="middle" fill="#c084fc" font-size="13" font-weight="bold">mw-prometheus</text>
+  <text x="370" y="605" text-anchor="middle" fill="#d8b4fe" font-size="10">Prometheus</text>
+  <text x="370" y="625" text-anchor="middle" fill="#e9d5ff" font-size="10">:9090→9090</text>
+  <text x="370" y="645" text-anchor="middle" fill="#e9d5ff" font-size="9">15초 스크래핑</text>
+
+  <rect x="480" y="560" width="180" height="100" rx="10" fill="#2e1065" stroke="#a855f7" stroke-width="1.5" filter="url(#sh2)"/>
+  <text x="570" y="585" text-anchor="middle" fill="#c084fc" font-size="13" font-weight="bold">mw-grafana</text>
+  <text x="570" y="605" text-anchor="middle" fill="#d8b4fe" font-size="10">Grafana</text>
+  <text x="570" y="625" text-anchor="middle" fill="#e9d5ff" font-size="10">:3000→3000</text>
+  <text x="570" y="645" text-anchor="middle" fill="#e9d5ff" font-size="9">admin/admin</text>
+
+  <rect x="680" y="560" width="180" height="100" rx="10" fill="#1e293b" stroke="#64748b" stroke-width="1" filter="url(#sh2)"/>
+  <text x="770" y="585" text-anchor="middle" fill="#94a3b8" font-size="13" font-weight="bold">mw-node-exporter</text>
+  <text x="770" y="605" text-anchor="middle" fill="#cbd5e1" font-size="10">Node Exporter</text>
+  <text x="770" y="625" text-anchor="middle" fill="#e2e8f0" font-size="10">:9100→9100</text>
+  <text x="770" y="645" text-anchor="middle" fill="#e2e8f0" font-size="9">OS 메트릭</text>
+
+  <rect x="880" y="560" width="180" height="100" rx="10" fill="#1e293b" stroke="#64748b" stroke-width="1" filter="url(#sh2)"/>
+  <text x="970" y="585" text-anchor="middle" fill="#94a3b8" font-size="13" font-weight="bold">mw-nginx-exporter</text>
+  <text x="970" y="605" text-anchor="middle" fill="#cbd5e1" font-size="10">Nginx Exporter</text>
+  <text x="970" y="625" text-anchor="middle" fill="#e2e8f0" font-size="10">:9113→9113</text>
+  <text x="970" y="645" text-anchor="middle" fill="#e2e8f0" font-size="9">Nginx 메트릭</text>
+
+  <!-- Internal communication arrows -->
+  <text x="600" y="695" text-anchor="middle" fill="#475569" font-size="12" font-weight="bold">내부 통신 패턴 (Docker DNS 해석)</text>
+
+  <rect x="80" y="710" width="340" height="80" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="100" y="735" fill="#4ade80" font-size="11">nginx → tomcat1:8080</text>
+  <text x="100" y="755" fill="#4ade80" font-size="11">nginx → tomcat2:8080</text>
+  <text x="100" y="775" fill="#94a3b8" font-size="10">프록시 패스 (Round Robin)</text>
+
+  <rect x="440" y="710" width="310" height="80" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="460" y="735" fill="#60a5fa" font-size="11">tomcat1 → mysql:3306 (JDBC)</text>
+  <text x="460" y="755" fill="#60a5fa" font-size="11">tomcat1 → keycloak:8080 (OIDC)</text>
+  <text x="460" y="775" fill="#94a3b8" font-size="10">애플리케이션 의존성</text>
+
+  <rect x="770" y="710" width="380" height="80" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="790" y="735" fill="#c084fc" font-size="11">prometheus → tomcat1:8080/actuator/prometheus</text>
+  <text x="790" y="755" fill="#c084fc" font-size="11">prometheus → node-exporter:9100/metrics</text>
+  <text x="790" y="775" fill="#94a3b8" font-size="10">메트릭 수집 (Pull 방식)</text>
+</svg>

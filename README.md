@@ -49,7 +49,7 @@
 |:----:|------|------|
 | <img src="https://avatars.githubusercontent.com/u/13431280?s=200&v=4" alt="Scouter" width="80"> <br> **Scouter** | **APM (Application Performance Monitoring)** | **Jennifer의 오픈소스 대안**이다. Java Agent(`-javaagent`) 방식으로 Tomcat에 부착되어 **TPS, 응답시간, Active Service, JVM 힙/GC** 등을 실시간으로 수집한다. Scouter Server(6100 포트)가 Agent 데이터를 수집·저장하고, Scouter Client에서 XLog 차트로 시각화한다. |
 | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prometheus/prometheus-original.svg" alt="Prometheus" width="80"> <br> **Prometheus** | **메트릭 수집 및 시계열 DB** | Pull 방식으로 각 Exporter(Node Exporter, Nginx Exporter)에서 **CPU, 메모리, 디스크, 네트워크, HTTP 요청 수** 등의 메트릭을 15초 간격으로 스크래핑한다. 15일간 데이터를 보관하며 PromQL로 조회할 수 있다. |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/grafana/grafana-original.svg" alt="Grafana" width="80"> <br> **Grafana** | **모니터링 대시보드** | Prometheus를 데이터소스로 연결하여 **서버 리소스, Nginx 트래픽, WAS 상태**를 시각화하는 대시보드를 제공한다. 사전 구성된 대시보드(JSON)가 프로비저닝되어 구동 즉시 모니터링이 가능한다. |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/grafana/grafana-original.svg" alt="Grafana" width="80"> <br> **Grafana** | **모니터링 대시보드** | Prometheus를 데이터소스로 연결하여 **서버 리소스, Nginx 트래픽, WAS 상태**를 시각화하는 대시보드를 제공한다. 사전 구성된 대시보드(JSON)가 프로비저닝되어 구동 즉시 모니터링이 가능하다. |
 | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prometheus/prometheus-original.svg" alt="Node Exporter" width="80"> <br> **Node Exporter** | **서버 리소스 메트릭 수집** | 호스트 시스템의 CPU 사용률, 메모리, 디스크 I/O, 네트워크 트래픽 등 OS 레벨 메트릭을 Prometheus 형식으로 노출한다. |
 | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nginx/nginx-original.svg" alt="Nginx Exporter" width="80"> <br> **Nginx Exporter** | **Nginx 메트릭 수집** | Nginx의 `stub_status` 모듈에서 활성 연결 수, 요청 처리량, 응답 코드별 카운트를 가져와 Prometheus에 노출한다. |
 
@@ -137,13 +137,14 @@ middle_ware/
 │   ├── prometheus/             # 메트릭 수집 대상 설정
 │   └── grafana/                # 대시보드 JSON + 프로비저닝
 ├── app/                        # Spring Boot 샘플 애플리케이션
-├── scripts/                    # 운영 자동화 스크립트 (8종)
+├── scripts/                    # 운영 자동화 스크립트 (9종)
 │   ├── start.sh / stop.sh      # 서비스 시작/종료
 │   ├── health-check.sh         # 일일 서버 점검
 │   ├── log-analyzer.sh         # 로그 분석
 │   ├── backup.sh               # 백업
 │   ├── cert-renew.sh           # 인증서 갱신
 │   ├── generate-certs.sh       # SSL 인증서 생성
+│   ├── load-test.sh            # 부하 테스트
 │   └── status.sh               # 상태 확인
 └── docs/                       # 기술 문서
 ```

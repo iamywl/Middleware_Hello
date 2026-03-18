@@ -123,7 +123,7 @@ Scouter는 **Java 전용 APM**으로, JVM 위에서 동작하는 Tomcat, Spring 
 | 경량성 | Agent 오버헤드 < 3% | Agent 오버헤드 < 3% | Agent 오버헤드 5~10% |
 | 한국어 자료 | 풍부 | 매우 풍부 | 풍부 |
 
-> **핵심**: Scouter를 사용한 경험은 Jennifer 기반 모니터링 업무에 **그대로 적용**할 수 있다. 개념과 용어가 거의 동일한다.
+> **핵심**: Scouter를 사용한 경험은 Jennifer 기반 모니터링 업무에 **그대로 적용**할 수 있다. 개념과 용어가 거의 동일하다.
 
 ---
 
@@ -2733,7 +2733,7 @@ Prometheus (Pull 모델):
 
 ## 29. Jennifer와의 비교
 
-28장에서 Scouter와 Prometheus/Grafana의 차이를 보았다. 이번에는 Scouter의 **직계 조상**인 Jennifer와 비교한다. Scouter는 Jennifer 핵심 개발자가 오픈소스로 만든 도구이므로, 개념과 용어가 거의 동일한다. **Scouter를 능숙하게 다루면, Jennifer를 쓰는 현업에 바로 투입될 수 있다.**
+28장에서 Scouter와 Prometheus/Grafana의 차이를 보았다. 이번에는 Scouter의 **직계 조상**인 Jennifer와 비교한다. Scouter는 Jennifer 핵심 개발자가 오픈소스로 만든 도구이므로, 개념과 용어가 거의 동일하다. **Scouter를 능숙하게 다루면, Jennifer를 쓰는 현업에 바로 투입될 수 있다.**
 
 | 기능 | Jennifer | Scouter (본 프로젝트) |
 |------|----------|----------------------|

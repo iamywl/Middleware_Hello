@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 850" font-family="'Segoe UI', 'Noto Sans KR', Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg6" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#08090f"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+    <filter id="sh6">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.35"/>
+    </filter>
+    <marker id="a6" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#64748b"/></marker>
+    <marker id="a6g" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#22c55e"/></marker>
+  </defs>
+
+  <rect width="1200" height="850" fill="url(#bg6)" rx="12"/>
+
+  <text x="600" y="38" text-anchor="middle" fill="#f1f5f9" font-size="22" font-weight="bold">컨테이너 의존성 및 부팅 순서 다이어그램</text>
+  <text x="600" y="60" text-anchor="middle" fill="#94a3b8" font-size="12">docker-compose up -d 실행 시 10개 컨테이너의 기동 순서와 의존성 체인</text>
+
+  <!-- Timeline axis -->
+  <line x1="100" y1="90" x2="100" y2="780" stroke="#334155" stroke-width="2"/>
+  <text x="55" y="85" fill="#64748b" font-size="11" font-weight="bold">시간 ▼</text>
+
+  <!-- Phase 1 -->
+  <rect x="120" y="90" width="1040" height="135" rx="10" fill="#0f172a" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <rect x="120" y="90" width="120" height="25" rx="5" fill="#166534"/>
+  <text x="180" y="107" text-anchor="middle" fill="#4ade80" font-size="12" font-weight="bold">Phase 1</text>
+  <text x="260" y="107" fill="#94a3b8" font-size="11">독립 기동 — 외부 의존성 없음</text>
+
+  <rect x="145" y="125" width="175" height="85" rx="8" fill="#422006" stroke="#f59e0b" stroke-width="1.5" filter="url(#sh6)"/>
+  <text x="232" y="148" text-anchor="middle" fill="#fbbf24" font-size="13" font-weight="bold">MySQL 8.0</text>
+  <text x="232" y="168" text-anchor="middle" fill="#fde68a" font-size="10">middleware_db 생성</text>
+  <text x="232" y="185" text-anchor="middle" fill="#fde68a" font-size="10">app_user 계정 생성</text>
+  <rect x="160" y="192" width="145" height="15" rx="3" fill="#854d0e"/>
+  <text x="232" y="203" text-anchor="middle" fill="#fef3c7" font-size="8">healthcheck: mysqladmin ping</text>
+
+  <rect x="340" y="125" width="155" height="85" rx="8" fill="#450a0a" stroke="#ef4444" stroke-width="1.5" filter="url(#sh6)"/>
+  <text x="417" y="148" text-anchor="middle" fill="#f87171" font-size="13" font-weight="bold">Keycloak</text>
+  <text x="417" y="168" text-anchor="middle" fill="#fca5a5" font-size="10">realm 자동 import</text>
+  <text x="417" y="185" text-anchor="middle" fill="#fca5a5" font-size="10">middleware-realm</text>
+  <text x="417" y="200" text-anchor="middle" fill="#94a3b8" font-size="9">독립 기동</text>
+
+  <rect x="515" y="125" width="155" height="85" rx="8" fill="#2e1065" stroke="#a855f7" stroke-width="1.5" filter="url(#sh6)"/>
+  <text x="592" y="148" text-anchor="middle" fill="#c084fc" font-size="13" font-weight="bold">Scouter Server</text>
+  <text x="592" y="168" text-anchor="middle" fill="#d8b4fe" font-size="10">UDP/TCP :6100 대기</text>
+  <text x="592" y="185" text-anchor="middle" fill="#d8b4fe" font-size="10">Agent 연결 대기</text>
+  <text x="592" y="200" text-anchor="middle" fill="#94a3b8" font-size="9">독립 기동</text>
+
+  <rect x="690" y="125" width="155" height="85" rx="8" fill="#2e1065" stroke="#8b5cf6" stroke-width="1.5" filter="url(#sh6)"/>
+  <text x="767" y="148" text-anchor="middle" fill="#c084fc" font-size="13" font-weight="bold">Prometheus</text>
+  <text x="767" y="168" text-anchor="middle" fill="#d8b4fe" font-size="10">prometheus.yml 로드</text>
+  <text x="767" y="185" text-anchor="middle" fill="#d8b4fe" font-size="10">스크래핑 시작</text>
+  <text x="767" y="200" text-anchor="middle" fill="#94a3b8" font-size="9">독립 기동</text>
+
+  <rect x="865" y="125" width="155" height="85" rx="8" fill="#1e293b" stroke="#64748b" stroke-width="1" filter="url(#sh6)"/>
+  <text x="942" y="148" text-anchor="middle" fill="#94a3b8" font-size="13" font-weight="bold">Node Exporter</text>
+  <text x="942" y="168" text-anchor="middle" fill="#cbd5e1" font-size="10">OS 메트릭 노출</text>
+  <text x="942" y="185" text-anchor="middle" fill="#cbd5e1" font-size="10">:9100/metrics</text>
+  <text x="942" y="200" text-anchor="middle" fill="#94a3b8" font-size="9">독립 기동</text>
+
+  <!-- Phase 2 -->
+  <rect x="120" y="245" width="1040" height="135" rx="10" fill="#0f172a" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <rect x="120" y="245" width="120" height="25" rx="5" fill="#1e3a5f"/>
+  <text x="180" y="262" text-anchor="middle" fill="#60a5fa" font-size="12" font-weight="bold">Phase 2</text>
+  <text x="260" y="262" fill="#94a3b8" font-size="11">MySQL healthy 이후 기동</text>
+
+  <!-- Dependency arrow from MySQL -->
+  <line x1="232" y1="210" x2="232" y2="245" stroke="#22c55e" stroke-width="2.5" marker-end="url(#a6g)"/>
+  <text x="250" y="232" fill="#4ade80" font-size="9" font-weight="bold">healthy ✓</text>
+
+  <rect x="145" y="280" width="310" height="85" rx="8" fill="#172554" stroke="#3b82f6" stroke-width="1.5" filter="url(#sh6)"/>
+  <text x="300" y="303" text-anchor="middle" fill="#60a5fa" font-size="13" font-weight="bold">Tomcat #1 (mw-tomcat1)</text>
+  <text x="300" y="323" text-anchor="middle" fill="#93c5fd" font-size="10">JVM 시작 → Scouter Agent 로드 → WAR 배포</text>
+  <text x="300" y="340" text-anchor="middle" fill="#93c5fd" font-size="10">Spring Boot 초기화 → MySQL JDBC 연결</text>
+  <rect x="160" y="348" width="280" height="14" rx="3" fill="#1e3a5f"/>
+  <text x="300" y="359" text-anchor="middle" fill="#bfdbfe" font-size="8">depends_on: mysql (condition: service_healthy)</text>
+
+  <rect x="495" y="280" width="310" height="85" rx="8" fill="#172554" stroke="#3b82f6" stroke-width="1.5" filter="url(#sh6)"/>
+  <text x="650" y="303" text-anchor="middle" fill="#60a5fa" font-size="13" font-weight="bold">Tomcat #2 (mw-tomcat2)</text>
+  <text x="650" y="323" text-anchor="middle" fill="#93c5fd" font-size="10">JVM 시작 → Scouter Agent 로드 → WAR 배포</text>
+  <text x="650" y="340" text-anchor="middle" fill="#93c5fd" font-size="10">Spring Boot 초기화 → MySQL JDBC 연결</text>
+  <rect x="510" y="348" width="280" height="14" rx="3" fill="#1e3a5f"/>
+  <text x="650" y="359" text-anchor="middle" fill="#bfdbfe" font-size="8">depends_on: mysql (condition: service_healthy)</text>
+
+  <!-- Build info -->
+  <rect x="850" y="280" width="290" height="85" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1" filter="url(#sh6)"/>
+  <text x="995" y="303" text-anchor="middle" fill="#94a3b8" font-size="12" font-weight="bold">Multi-stage Build (최초 1회)</text>
+  <text x="870" y="323" fill="#cbd5e1" font-size="10">Stage 1: Maven 빌드 → app.war</text>
+  <text x="870" y="343" fill="#cbd5e1" font-size="10">Stage 2: Tomcat + Scouter Agent</text>
+  <text x="870" y="358" fill="#94a3b8" font-size="9">소요시간: 3~5분 (최초)</text>
+
+  <!-- Phase 3 -->
+  <rect x="120" y="400" width="1040" height="110" rx="10" fill="#0f172a" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <rect x="120" y="400" width="120" height="25" rx="5" fill="#14532d"/>
+  <text x="180" y="417" text-anchor="middle" fill="#4ade80" font-size="12" font-weight="bold">Phase 3</text>
+  <text x="260" y="417" fill="#94a3b8" font-size="11">Tomcat 기동 이후</text>
+
+  <line x1="300" y1="365" x2="300" y2="400" stroke="#3b82f6" stroke-width="2" marker-end="url(#a6)"/>
+  <line x1="650" y1="365" x2="400" y2="400" stroke="#3b82f6" stroke-width="2" marker-end="url(#a6)"/>
+
+  <rect x="145" y="435" width="420" height="60" rx="8" fill="#052e16" stroke="#22c55e" stroke-width="1.5" filter="url(#sh6)"/>
+  <text x="355" y="458" text-anchor="middle" fill="#4ade80" font-size="14" font-weight="bold">Nginx (mw-nginx)</text>
+  <text x="355" y="478" text-anchor="middle" fill="#86efac" font-size="10">upstream: tomcat1:8080, tomcat2:8080 | SSL 인증서 로드 | :80, :443 바인딩</text>
+  <rect x="160" y="483" width="390" height="10" rx="2" fill="#14532d"/>
+  <text x="355" y="491" text-anchor="middle" fill="#bbf7d0" font-size="7">depends_on: tomcat1, tomcat2</text>
+
+  <!-- Phase 4 -->
+  <rect x="120" y="520" width="1040" height="100" rx="10" fill="#0f172a" stroke="#64748b" stroke-width="1" stroke-dasharray="6 3"/>
+  <rect x="120" y="520" width="120" height="25" rx="5" fill="#334155"/>
+  <text x="180" y="537" text-anchor="middle" fill="#94a3b8" font-size="12" font-weight="bold">Phase 4</text>
+  <text x="260" y="537" fill="#94a3b8" font-size="11">Nginx 기동 이후</text>
+
+  <line x1="355" y1="495" x2="355" y2="520" stroke="#22c55e" stroke-width="2" marker-end="url(#a6)"/>
+
+  <rect x="145" y="555" width="250" height="50" rx="8" fill="#1e293b" stroke="#64748b" stroke-width="1" filter="url(#sh6)"/>
+  <text x="270" y="578" text-anchor="middle" fill="#94a3b8" font-size="12" font-weight="bold">Nginx Exporter</text>
+  <text x="270" y="595" text-anchor="middle" fill="#cbd5e1" font-size="10">stub_status 메트릭 수집 → :9113</text>
+
+  <!-- Phase 5 -->
+  <rect x="120" y="630" width="1040" height="100" rx="10" fill="#0f172a" stroke="#a855f7" stroke-width="1" stroke-dasharray="6 3"/>
+  <rect x="120" y="630" width="120" height="25" rx="5" fill="#2e1065"/>
+  <text x="180" y="647" text-anchor="middle" fill="#c084fc" font-size="12" font-weight="bold">Phase 5</text>
+  <text x="260" y="647" fill="#94a3b8" font-size="11">Prometheus 기동 이후</text>
+
+  <line x1="767" y1="210" x2="600" y2="630" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.5"/>
+
+  <rect x="145" y="665" width="250" height="50" rx="8" fill="#2e1065" stroke="#a855f7" stroke-width="1" filter="url(#sh6)"/>
+  <text x="270" y="688" text-anchor="middle" fill="#c084fc" font-size="12" font-weight="bold">Grafana</text>
+  <text x="270" y="705" text-anchor="middle" fill="#d8b4fe" font-size="10">Prometheus 데이터소스 + 대시보드 자동 로드</text>
+
+  <!-- Final: All Services Ready -->
+  <rect x="120" y="745" width="1040" height="50" rx="10" fill="#052e16" stroke="#22c55e" stroke-width="2"/>
+  <text x="600" y="775" text-anchor="middle" fill="#4ade80" font-size="16" font-weight="bold">✅ 전체 시스템 준비 완료 — 10개 컨테이너 Running</text>
+
+  <!-- Timeline markers -->
+  <text x="80" y="110" text-anchor="middle" fill="#4ade80" font-size="10" font-weight="bold">0s</text>
+  <text x="80" y="265" text-anchor="middle" fill="#60a5fa" font-size="10" font-weight="bold">~30s</text>
+  <text x="80" y="420" text-anchor="middle" fill="#4ade80" font-size="10" font-weight="bold">~60s</text>
+  <text x="80" y="540" text-anchor="middle" fill="#94a3b8" font-size="10" font-weight="bold">~65s</text>
+  <text x="80" y="650" text-anchor="middle" fill="#c084fc" font-size="10" font-weight="bold">~70s</text>
+  <text x="80" y="775" text-anchor="middle" fill="#4ade80" font-size="10" font-weight="bold">~90s</text>
+
+  <!-- Legend -->
+  <rect x="500" y="800" width="660" height="35" rx="6" fill="#1e293b"/>
+  <text x="520" y="822" fill="#94a3b8" font-size="10">의존성:</text>
+  <line x1="575" y1="817" x2="620" y2="817" stroke="#22c55e" stroke-width="2.5" marker-end="url(#a6g)"/>
+  <text x="630" y="822" fill="#86efac" font-size="10">healthcheck 통과 후</text>
+  <line x1="780" y1="817" x2="825" y2="817" stroke="#64748b" stroke-width="2" marker-end="url(#a6)"/>
+  <text x="835" y="822" fill="#94a3b8" font-size="10">started 후</text>
+  <line x1="920" y1="817" x2="965" y2="817" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <text x="975" y="822" fill="#c4b5fd" font-size="10">간접 의존 (데이터 연결)</text>
+</svg>

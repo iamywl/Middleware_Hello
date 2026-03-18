@@ -22,9 +22,25 @@
 
 ## 1. 사전 준비
 
-아래 도구가 설치되어 있어야 한다.
+### 1.1 최소 시스템 사양
+
+본 프로젝트는 10개의 컨테이너를 동시에 실행하므로 아래 사양이 필요하다.
+
+| 항목 | 최소 사양 | 권장 사양 |
+|------|-----------|-----------|
+| **RAM** | 8GB | 16GB |
+| **디스크 여유 공간** | 10GB | 20GB |
+| **CPU** | 2코어 | 4코어 이상 |
+
+> **Mac/Windows 사용자 주의**: Docker Desktop은 기본 메모리 할당이 **2GB**로 설정되어 있다.
+> 반드시 **Settings → Resources → Memory**를 **6GB 이상**으로 올려야 한다. 그렇지 않으면 컨테이너가 기동 중 OOM으로 종료된다.
+
+### 1.2 필수 도구 설치 확인
 
 ```bash
+# Git 설치 확인
+git --version             # git version 2.x 이상
+
 # Docker 설치 확인
 docker --version          # Docker version 20.x 이상
 
@@ -33,8 +49,28 @@ docker-compose --version  # Docker Compose version 2.x 이상
 ```
 
 설치가 안 되어 있다면:
-- **Mac**: [Docker Desktop](https://www.docker.com/products/docker-desktop/) 설치
-- **Linux**: `sudo apt install docker.io docker-compose` (Ubuntu 기준)
+- **Mac**: [Docker Desktop](https://www.docker.com/products/docker-desktop/) 설치 (Git은 Xcode Command Line Tools에 포함)
+- **Linux**: `sudo apt install git docker.io docker-compose` (Ubuntu 기준)
+
+### 1.3 포트 충돌 확인
+
+아래 포트를 이미 사용 중인 프로그램이 있으면 컨테이너가 기동에 실패한다. 미리 확인하자.
+
+```bash
+# Mac/Linux — 사용 중인 포트 확인
+lsof -i :80 -i :443 -i :3000 -i :3306 -i :8080 -i :9090
+
+# 아무 출력도 없으면 정상 (포트가 비어 있음)
+# 출력이 있으면 해당 프로세스를 종료하거나, 포트를 변경해야 한다
+```
+
+| 포트 | 사용 서비스 | 자주 충돌하는 프로그램 |
+|------|-------------|----------------------|
+| 80, 443 | Nginx | Apache httpd, 다른 웹서버 |
+| 3000 | Grafana | 다른 Node.js 앱 |
+| 3306 | MySQL | 로컬 MySQL 서버 |
+| 8080 | Keycloak | 로컬 Tomcat, Jenkins |
+| 9090 | Prometheus | - |
 
 ---
 
@@ -72,6 +108,30 @@ docker-compose ps
 | mw-nginx-exporter | Nginx 메트릭 수집 |
 
 > 컨테이너가 뜨는 데 1~2분 걸릴 수 있다. 특히 MySQL이 `healthy` 상태가 되어야 Tomcat이 기동된다.
+
+### 구동에 실패했을 때
+
+컨테이너가 `Exited` 또는 `Restarting` 상태라면 아래 순서로 확인한다.
+
+```bash
+# ① 어떤 컨테이너가 문제인지 확인
+docker-compose ps
+
+# ② 문제 컨테이너의 로그 확인 (예: tomcat1이 Exited일 때)
+docker-compose logs tomcat1
+
+# ③ 빌드 실패 시 (Maven 다운로드 에러 등) — 재빌드
+docker-compose down
+docker-compose up --build -d
+
+# ④ 포트 충돌 에러 ("bind: address already in use")
+#    → 1.3절의 포트 충돌 확인 참조
+
+# ⑤ 메모리 부족 (컨테이너가 계속 재시작)
+#    → Docker Desktop의 메모리 할당을 6GB 이상으로 올린다
+```
+
+> `-k` 옵션 없이 `curl https://localhost/health`를 실행하면 `curl: (60) SSL certificate problem: unable to get local issuer certificate` 에러가 발생한다. 이것은 자체서명 인증서이기 때문이며 정상이다. `-k` 옵션은 인증서 검증을 건너뛰라는 뜻이다.
 
 ---
 
